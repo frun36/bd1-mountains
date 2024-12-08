@@ -1,0 +1,24 @@
+Planowane funkcjonalności:
+- przechowywanie nazwanych punktów, między którymi są szlaki, typy:
+    - wysokość n.p.m.
+    - nazwa
+    - typ:
+        - szczyt
+        - przełęcz
+        - polana
+        - skrzyżowanie
+- informacje o szlakach wychodzących z każdego punktu:
+    - punkt docelowy
+    - kolor
+    - punkty GOT za przejście
+- użytkownicy
+    - username, password
+    - zapisane trasy:
+        - przebyte (kilka razy?)
+        - ulubione
+    - sumaryczne punkty GOT
+    - ranking użytkowników
+- w aplikacji można:
+    - dopisywać punkty i szlaki
+    - tworzyć trasy 
+    
