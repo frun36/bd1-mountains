@@ -7,7 +7,13 @@ public class Main {
     public static void main(String[] args) throws IOException {
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
-        server.createContext("/", new FileHandler("static/index.html"));
+        RouteBuilder routeBuilder = new RouteBuilder();
+
+        routeBuilder
+                .addRoute("/", "GET", new FileHandler("static/index.html"))
+                .addRoute("/test", "GET", new FileHandler("static/test.html"))
+                .addRoute("/test", "POST", new FileHandler("static/index.html"));
+        routeBuilder.registerRoutes(server);
 
         server.setExecutor(null); // Default executor
         server.start();
