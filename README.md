@@ -1,24 +1,29 @@
 Planowane funkcjonalności:
-- przechowywanie nazwanych punktów, między którymi są szlaki, typy:
+- przechowywanie nazwanych punktów, między którymi są szlaki:
     - wysokość n.p.m.
-    - nazwa
+    - nazwa (lub brak)
     - typ:
         - szczyt
         - przełęcz
         - polana
-        - skrzyżowanie
-- informacje o szlakach wychodzących z każdego punktu:
+        - rozwidlenie
+        - schronisko
+        - ładny punkt
+        - inne
+- informacje o szlakach:
+    - punkt startowy
     - punkt docelowy
     - kolor
-    - punkty GOT za przejście
+    - punkty GOT za przejście (lub inna miara, typu dystans+przewyższenie)
 - użytkownicy
     - username, password
-    - zapisane trasy:
-        - przebyte (kilka razy?)
-        - ulubione
-    - sumaryczne punkty GOT
-    - ranking użytkowników
-- w aplikacji można:
-    - dopisywać punkty i szlaki
-    - tworzyć trasy 
-    
+    - tworzenie tras
+- w aplikacji:
+    - dopisywanie punktów i szlaków (czy konieczne?)
+    - tworzenie tras (wybór kolejnych punktów, patrząc które są połączone szlakami)
+    - ranking użytkowników (punkty GOT za zapisane trasy, ew. coś bardziej wymyślnego) 
+- triggery/widoki w bazie:
+    - dbanie o integralność tabeli `route_point` - jeden początek i koniec (lub pętla), możliwe tylko takie punkty, które mają szlak między sobą
+    - generowanie tabeli `leaderboard` po odpowiednich zmianach za pomocą triggera (żeby nie było konieczne generowanie jej na każde życzenie użytkownika)
+    - funkcja upraszczająca wstawianie do tabeli `route_point` (podanie poprzedniego punktu i obecnego punktu, zamiast ręcznie rozrywać strukturę linked-listy)
+    - widok umożliwiający wyświetlenie trasy jako lista kolejnych punktów (potencjalnie często używane query)
