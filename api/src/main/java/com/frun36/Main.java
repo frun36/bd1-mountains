@@ -16,13 +16,13 @@ public class Main {
         Dotenv env = Dotenv.load();
         String url = env.get("JDBC");
         
-        Connection connection = DriverManager.getConnection(url);
+        Connection conn = DriverManager.getConnection(url);
 
-        
+
 
         HttpServer server = HttpServer.create(new InetSocketAddress(8080), 0);
 
-        server.createContext("/test", new BasicCrud<Tables.Point>(Tables.Point.class));
+        server.createContext("/point", new BasicCrud<Tables.Point>(conn, Tables.Point.class, "point"));
 
         server.setExecutor(null); // Default executor
         server.start();
