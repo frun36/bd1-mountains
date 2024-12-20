@@ -1,0 +1,84 @@
+{
+    "points": [
+        {
+            "name": "Schronisko Murowaniec",
+            "altitude": 1500,
+            "type": "shelter"
+        },
+        {
+            "name": "Czerwony Staw w Dolinie Pańszczycy",
+            "altitude": 1654,
+            "type": "lake"
+        },
+        {
+            "name": "Przełęcz Krzyżne",
+            "altitude": 2144,
+            "type": "pass"
+        },
+        {
+            "name": "Skrajny Granat",
+            "altitude": 2228,
+            "type": "peak"
+        },
+        {
+            "name": "Zadni Granat",
+            "altitude": 2240,
+            "type": "peak"
+        },
+        {
+            "name": "Żleb Kulczyńskiego",
+            "altitude": 2150,
+            "type": "other"
+        },
+        {
+            "name": "Kozi Wierch",
+            "altitude": 2291,
+            "type": "peak"
+        },
+        {
+            "name": "Kozia Przełęcz",
+            "altitude": 2126,
+            "type": "pass"
+        },
+        {
+            "name": "Zawrat",
+            "altitude": 2159,
+            "type": "pass"
+        },
+        {
+            "name": "Świnica",
+            "altitude": 2302,
+            "type": "peak"
+        },
+        {
+            "name": "Świnicka Przełęcz",
+            "altitude": 2051,
+            "type": "pass"
+        },
+        {
+            "name": "Zmarzły Staw Gąsienicowy",
+            "altitude": 1788,
+            "type": "lake"
+        },
+        {
+            "name": "Czarny Staw Gąsienicowy",
+            "altitude": 1624,
+            "type": "lake"
+        },
+        {
+            "name": "Karb",
+            "altitude": 1853,
+            "type": "pass"
+        },
+        {
+            "name": "Kościelec",
+            "altitude": 2155,
+            "type": "peak"
+        },
+        {
+            "name": "Zielony Staw Gąsienicowy",
+            "altitude": 1672,
+            "type": "lake"
+        }
+    ]
+}
