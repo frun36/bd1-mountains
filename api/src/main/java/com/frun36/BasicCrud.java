@@ -6,7 +6,6 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 
 import com.google.gson.Gson;
-import com.google.gson.JsonParseException;
 import com.google.gson.reflect.TypeToken;
 
 import java.io.InputStream;
@@ -16,6 +15,8 @@ import java.util.List;
 public class BasicCrud<R> implements HttpHandler {
     protected Class<R> recordClass;
     protected Gson gson = new Gson();
+
+    protected record Response(Integer responseCode, byte[] responseBody) {}
 
     public BasicCrud(Class<R> recordClass) {
         this.recordClass = recordClass;
@@ -33,14 +34,41 @@ public class BasicCrud<R> implements HttpHandler {
             System.out.println(listType);
 
             List<R> items = gson.fromJson(jsonString, listType);
-            System.out.println("Items:");
-            items.forEach(System.out::println);
+            
+            Response res = switch (ex.getRequestMethod()) {
+                case "GET" -> handleGet(items, ex);
+                case "POST" -> handlePost(items, ex);
+                case "PUT" -> handlePut(items, ex);
+                case "DELETE" -> handleDelete(items, ex);
+                default -> new Response(405, null);
+            };
 
-            ex.sendResponseHeaders(200, -1);
-        } catch (JsonParseException e) {
-            System.err.println("Error parsing JSON: " + e.getMessage());
+            Integer contentSize = res.responseBody == null ? -1 : res.responseBody.length;
+            ex.sendResponseHeaders(res.responseCode, contentSize);
+            if (!contentSize.equals(-1)) {
+                ex.getResponseBody().write(res.responseBody);
+            }
         } catch (Exception e) {
-            System.err.println("Unexpected error occurred: " + e.getMessage());
+            String message = String.format("Error of type %s occurred: %s\n", e.getClass().getName(), e.getMessage());
+            byte[] messageBytes = message.getBytes();
+            ex.sendResponseHeaders(500, messageBytes.length);
+            ex.getResponseBody().write(messageBytes);
         }
+    }
+
+    protected Response handleGet(List<R> body, HttpExchange ex) {
+        return new Response(501, null);
+    }
+
+    protected Response handlePost(List<R> body, HttpExchange ex) {
+        return new Response(501, null);
+    }
+
+    protected Response handlePut(List<R> body, HttpExchange ex) {
+        return new Response(501, null);
+    }
+
+    protected Response handleDelete(List<R> body, HttpExchange ex) {
+        return new Response(501, null);
     }
 }
