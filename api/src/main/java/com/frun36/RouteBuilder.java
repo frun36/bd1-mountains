@@ -1,3 +1,5 @@
+package com.frun36;
+
 import java.io.InputStream;
 import java.util.HashMap;
 

@@ -1,3 +1,5 @@
+package com.frun36;
+
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
