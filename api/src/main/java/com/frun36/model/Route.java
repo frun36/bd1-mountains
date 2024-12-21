@@ -1,6 +1,6 @@
 package com.frun36.model;
 
-import java.security.Timestamp;
+import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 

@@ -6,11 +6,13 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 
 import com.frun36.model.DbRow;
+import com.frun36.model.DbRowFactory;
 import com.google.gson.Gson;
 
 import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.List;
@@ -34,13 +36,15 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
 
     @Override
     public void handle(HttpExchange ex) throws IOException {
-        InputStream body = ex.getRequestBody();
-        String jsonString = new String(body.readAllBytes());
-
         try {
+            String method = ex.getRequestMethod();
+            InputStream body = ex.getRequestBody();
+            String jsonString = new String(body.readAllBytes());
+            System.out.printf("%s %s\n%s\n\n", method, this.tableName, jsonString);
+
             R item = gson.fromJson(jsonString, recordClass);
 
-            Response res = switch (ex.getRequestMethod()) {
+            Response res = switch (method) {
                 case "GET" -> handleGet(item, ex);
                 case "POST" -> handlePost(item, ex);
                 case "PUT" -> handlePut(item, ex);
@@ -70,9 +74,16 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
         }
 
         PreparedStatement ps = this.conn.prepareStatement(sql);
-
         if (item.getId() != null)
             ps.setInt(1, item.getId());
+        
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            DbRowFactory factory = DbRow.getFactory(this.recordClass); 
+            DbRow rec = factory.fromResult(rs);
+            System.out.println(rec);
+        }
 
         return new Response(501, ps.toString().getBytes());
     }
@@ -91,15 +102,15 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
         for (Integer i = 0; i < columnNames.size(); i++) {
             Object val = map.get(columnNames.get(i));
 
-            switch (val.getClass().getSimpleName()) {
-                case "String":
-                    ps.setString(i + 1, (String)val);
+            switch (val) {
+                case String string:
+                    ps.setString(i + 1, string);
                     break;
-                case "Integer":
-                    ps.setInt(i + 1, (Integer)val);
+                case Integer integer:
+                    ps.setInt(i + 1, integer);
                     break;
-                case "Timestamp":
-                    ps.setTimestamp(i + 1, (Timestamp)val);
+                case Timestamp timestamp:
+                    ps.setTimestamp(i + 1, timestamp);
                     break;
                 default:
                     return new Response(500, "Bad data type in record".getBytes());

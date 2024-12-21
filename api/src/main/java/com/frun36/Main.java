@@ -19,6 +19,8 @@ public class Main {
         String url = env.get("JDBC");
 
         Connection conn = DriverManager.getConnection(url);
+        conn.createStatement().execute("SET search_path TO mountains");
+        System.out.println("Connected to DB");
 
         Integer port = 8080;
         HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
