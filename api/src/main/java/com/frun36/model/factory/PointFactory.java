@@ -1,7 +1,9 @@
-package com.frun36.model;
+package com.frun36.model.factory;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
+
+import com.frun36.model.Point;
 
 public class PointFactory extends DbRowFactory {
     @Override

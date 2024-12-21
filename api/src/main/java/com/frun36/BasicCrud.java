@@ -6,7 +6,7 @@ import com.sun.net.httpserver.HttpHandler;
 import java.io.IOException;
 
 import com.frun36.model.DbRow;
-import com.frun36.model.DbRowFactory;
+import com.frun36.model.factory.DbRowFactory;
 import com.google.gson.Gson;
 
 import java.io.InputStream;

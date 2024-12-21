@@ -29,6 +29,7 @@ public class Main {
         server.createContext("/trail", new BasicCrud<Trail>(conn, Trail.class, "trail"));
         server.createContext("/route", new BasicCrud<Route>(conn, Route.class, "route"));
         server.createContext("/route_point", new BasicCrud<RoutePoint>(conn, RoutePoint.class, "route_point"));
+        server.createContext("/app_user", new BasicCrud<AppUser>(conn, AppUser.class, "app_user"));
 
         server.setExecutor(null); // Default executor
         server.start();

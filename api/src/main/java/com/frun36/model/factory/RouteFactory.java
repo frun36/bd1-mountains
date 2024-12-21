@@ -1,6 +1,9 @@
-package com.frun36.model;
+package com.frun36.model.factory;
 
 import java.sql.Timestamp;
+
+import com.frun36.model.Route;
+
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
