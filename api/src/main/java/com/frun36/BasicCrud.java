@@ -126,7 +126,7 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
         ResultSet rs = ps.getGeneratedKeys();
 
         if (rs.next()) {
-            String insertedId = String.format("{ \"id\": %d }", rs.getLong(1));
+            String insertedId = String.format("{\"id\": %d}", rs.getLong(1));
             return new Response(200, insertedId.getBytes());
         } else {
             return new Response(500, "No rows updated".getBytes());
@@ -150,6 +150,9 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
         if (item.getId() != null)
             ps.setInt(1, item.getId());
 
-        return new Response(501, ps.toString().getBytes());
+        Integer deleted = ps.executeUpdate();
+        String response = String.format("{\"deleted\": %d}", deleted);
+
+        return new Response(200, response.getBytes());
     }
 }
