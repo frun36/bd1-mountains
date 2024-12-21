@@ -15,6 +15,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -57,11 +58,13 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
             if (!contentSize.equals(-1)) {
                 ex.getResponseBody().write(res.responseBody);
             }
+            ex.close();
         } catch (Exception e) {
             String message = String.format("Error of type %s occurred: %s\n", e.getClass().getName(), e.getMessage());
             byte[] messageBytes = message.getBytes();
             ex.sendResponseHeaders(500, messageBytes.length);
             ex.getResponseBody().write(messageBytes);
+            ex.close();
         }
     }
 
@@ -78,14 +81,15 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
             ps.setInt(1, item.getId());
         
         ResultSet rs = ps.executeQuery();
-
+        List<DbRow> rows = new ArrayList<DbRow>();
         while (rs.next()) {
             DbRowFactory factory = DbRow.getFactory(this.recordClass); 
             DbRow rec = factory.fromResult(rs);
-            System.out.println(rec);
+            rows.add(rec);
         }
 
-        return new Response(501, ps.toString().getBytes());
+        String json = this.gson.toJson(rows);
+        return new Response(501, json.getBytes());
     }
 
     protected Response handlePost(R item, HttpExchange ex) throws SQLException {
