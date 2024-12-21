@@ -42,19 +42,24 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
             String method = ex.getRequestMethod();
             InputStream body = ex.getRequestBody();
             String jsonString = new String(body.readAllBytes());
-            System.out.printf("%s %s\n%s\n\n", method, this.tableName, jsonString);
+            System.out.printf("%s %s\n%s\n\n", method, ex.getRequestURI(), jsonString);
 
             R item = gson.fromJson(jsonString, recordClass);
+            Integer id = getRequestedId(ex);
 
             Response res = switch (method) {
-                case "GET" -> handleGet(item, ex);
+                case "GET" -> handleGet(id, ex);
                 case "POST" -> handlePost(item, ex);
-                case "PUT" -> handlePut(item, ex);
-                case "DELETE" -> handleDelete(item, ex);
+                case "PUT" -> handlePut(id, item, ex);
+                case "DELETE" -> handleDelete(id, ex);
+                case "OPTIONS" -> new Response(200, null);
                 default -> new Response(405, null);
             };
 
             Integer contentSize = res.responseBody == null ? -1 : res.responseBody.length;
+            ex.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+            ex.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+            ex.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
             ex.sendResponseHeaders(res.responseCode, contentSize);
             if (!contentSize.equals(-1)) {
                 ex.getResponseBody().write(res.responseBody);
@@ -63,23 +68,26 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
         } catch (Exception e) {
             String message = String.format("Error of type %s occurred: %s\n", e.getClass().getName(), e.getMessage());
             byte[] messageBytes = message.getBytes();
+            ex.getResponseHeaders().set("Access-Control-Allow-Origin", "*");
+            ex.getResponseHeaders().set("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE");
+            ex.getResponseHeaders().set("Access-Control-Allow-Headers", "Content-Type");
             ex.sendResponseHeaders(500, messageBytes.length);
             ex.getResponseBody().write(messageBytes);
             ex.close();
         }
     }
 
-    protected Response handleGet(R item, HttpExchange ex) throws SQLException {
+    protected Response handleGet(Integer id, HttpExchange ex) throws SQLException {
         String sql;
-        if (item.getId() == null) {
+        if (id == null) {
             sql = String.format("SELECT * FROM %s", this.tableName);
         } else {
             sql = String.format("SELECT * FROM %s WHERE id = ?", this.tableName);
         }
 
         PreparedStatement ps = this.conn.prepareStatement(sql);
-        if (item.getId() != null)
-            ps.setInt(1, item.getId());
+        if (id != null)
+            ps.setInt(1, id);
 
         ResultSet rs = ps.executeQuery();
         List<DbRow> rows = new ArrayList<DbRow>();
@@ -133,13 +141,13 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
         }
     }
 
-    protected Response handlePut(R item, HttpExchange ex) {
+    protected Response handlePut(Integer id, R item, HttpExchange ex) {
         return new Response(501, null);
     }
 
-    protected Response handleDelete(R item, HttpExchange ex) throws SQLException {
+    protected Response handleDelete(Integer id, HttpExchange ex) throws SQLException {
         String sql;
-        if (item.getId() == null) {
+        if (id == null) {
             sql = String.format("DELETE FROM %s", this.tableName);
         } else {
             sql = String.format("DELETE FROM %s WHERE id = ?", this.tableName);
@@ -147,12 +155,27 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
 
         PreparedStatement ps = this.conn.prepareStatement(sql);
 
-        if (item.getId() != null)
-            ps.setInt(1, item.getId());
+        if (id != null)
+            ps.setInt(1, id);
 
         Integer deleted = ps.executeUpdate();
         String response = String.format("{\"deleted\": %d}", deleted);
 
         return new Response(200, response.getBytes());
+    }
+
+    Integer getRequestedId(HttpExchange ex) {
+        String query = ex.getRequestURI().normalize().getQuery();
+        if (query == null)
+            return null;
+
+        String[] params = query.split("&");
+        for (String param : params) {
+            if (param.startsWith("id=")) {
+                String idString = param.substring(3);
+                return Integer.valueOf(idString);
+            }
+        }
+        return null;
     }
 }
