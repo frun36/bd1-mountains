@@ -13,6 +13,7 @@ import java.io.InputStream;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.Statement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.util.ArrayList;
@@ -79,17 +80,17 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
         PreparedStatement ps = this.conn.prepareStatement(sql);
         if (item.getId() != null)
             ps.setInt(1, item.getId());
-        
+
         ResultSet rs = ps.executeQuery();
         List<DbRow> rows = new ArrayList<DbRow>();
         while (rs.next()) {
-            DbRowFactory factory = DbRow.getFactory(this.recordClass); 
+            DbRowFactory factory = DbRow.getFactory(this.recordClass);
             DbRow rec = factory.fromResult(rs);
             rows.add(rec);
         }
 
         String json = this.gson.toJson(rows);
-        return new Response(501, json.getBytes());
+        return new Response(200, json.getBytes());
     }
 
     protected Response handlePost(R item, HttpExchange ex) throws SQLException {
@@ -101,7 +102,7 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
         String placeholders = columnNames.stream().map(cn -> "?").collect(Collectors.joining(", "));
 
         String sql = String.format("INSERT INTO %s (%s) VALUES (%s)", this.tableName, sqlNames, placeholders);
-        PreparedStatement ps = this.conn.prepareStatement(sql);
+        PreparedStatement ps = this.conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 
         for (Integer i = 0; i < columnNames.size(); i++) {
             Object val = map.get(columnNames.get(i));
@@ -121,7 +122,15 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
             }
         }
 
-        return new Response(501, ps.toString().getBytes());
+        ps.executeUpdate();
+        ResultSet rs = ps.getGeneratedKeys();
+
+        if (rs.next()) {
+            String insertedId = String.format("{ \"id\": %d }", rs.getLong(1));
+            return new Response(200, insertedId.getBytes());
+        } else {
+            return new Response(500, "No rows updated".getBytes());
+        }
     }
 
     protected Response handlePut(R item, HttpExchange ex) {
