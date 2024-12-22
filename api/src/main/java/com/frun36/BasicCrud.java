@@ -89,6 +89,7 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
         if (id != null)
             ps.setInt(1, id);
 
+        System.out.println(ps);
         ResultSet rs = ps.executeQuery();
         List<DbRow> rows = new ArrayList<DbRow>();
         while (rs.next()) {
@@ -105,6 +106,9 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
         Map<String, Object> map = item.getMap();
 
         List<String> columnNames = map.keySet().stream().filter(cn -> map.get(cn) != null).collect(Collectors.toList());
+
+        if (columnNames.isEmpty())
+            return new Response(400, "Empty insert attempted".getBytes());
 
         String sqlNames = columnNames.stream().collect(Collectors.joining(", "));
         String placeholders = columnNames.stream().map(cn -> "?").collect(Collectors.joining(", "));
@@ -130,6 +134,7 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
             }
         }
 
+        System.out.println(ps);
         ps.executeUpdate();
         ResultSet rs = ps.getGeneratedKeys();
 
@@ -157,7 +162,8 @@ public class BasicCrud<R extends DbRow> implements HttpHandler {
 
         if (id != null)
             ps.setInt(1, id);
-
+        
+        System.out.println(ps);
         Integer deleted = ps.executeUpdate();
         String response = String.format("{\"deleted\": %d}", deleted);
 

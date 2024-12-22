@@ -3,24 +3,39 @@ import axios from "axios";
 
 export interface AppUser {
     id: number;
-    username: string;
-    password: string;
-    totalGotPoints: number;
+    username: string | null;
+    password: string | null;
+    totalGotPoints: number | null;
 }
 
 export interface Point {
     id: number;
-    name: string;
-    altitude: number;
-    type: string;
+    name: string | null;
+    altitude: number | null;
+    type: string | null;
 }
 
 export interface Trail {
     id: number;
-    startPointId: number; 
-    endPointId: number; 
-    gotPoints: number; 
-    color: string;
+    startPointId: number | null;
+    endPointId: number | null;
+    gotPoints: number | null;
+    color: string | null;
+}
+
+export interface Route {
+    id: number;
+    name: string | null;
+    userId: number | null;
+    timeModified: string | null;
+}
+
+export interface RoutePoint {
+    id: number;
+    routeId: number | null;
+    currentPointId: number | null;
+    previousPointId: number | null;
+    nextPointId: number | null;
 }
 
 interface WithId {
@@ -46,7 +61,6 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
 
     // GET
     const getItems = () => {
-        console.log(inputs);
         axios.get<R[]>(`http://localhost:8080/${tableName}`)
             .then((response) => setItems(response.data))
             .catch((error) => console.error("Error fetching items:", error))
@@ -83,8 +97,10 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
     };
 
     const handleInputChange = (id: number, field: keyof R, value: string) => {
-        setItems((prevItems) =>
-            prevItems.map((item) => (item.id === id ? { ...item, [field]: value } : item))
+        setItems((prevItems) => {
+            const parsedValue = (value == "" ? null : value);
+            return prevItems.map((item) => (item.id === id ? { ...item, [field]: parsedValue } : item));
+        }
         );
     };
 
@@ -112,7 +128,7 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
                                             input.editable ?
                                                 <input
                                                     type={input.type}
-                                                    value={value}
+                                                    value={value ?? ""}
                                                     onChange={(e) => handleInputChange(item.id, input.key, e.target.value)}
                                                 /> :
                                                 value
@@ -134,7 +150,7 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
                                 return <td key={index}>
                                     <input
                                         type={input.type}
-                                        value={newItem[key] as string}
+                                        value={newItem[key] as string ?? ""}
                                         onChange={(e) => setNewItem({ ...newItem, [key]: e.target.value })}
                                     />
                                 </td>
