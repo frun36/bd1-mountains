@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import Crud, { AppUser, Point } from './components/Crud';
+import Crud, { AppUser, Point, Trail } from './components/Crud';
 
 
 const App: React.FC = () => {
@@ -29,7 +29,18 @@ const App: React.FC = () => {
                             { type: "text", key: "type", editable: true },
                         ]} />
                 } />
-
+                <Route path="/trail" element={
+                    <Crud<Trail>
+                        tableName='trail'
+                        defaultItem={{ startPointId: 0, endPointId: 0, gotPoints: 0, color: '', }}
+                        inputs={[
+                            { type: "number", key: "id", editable: false },
+                            { type: "number", key: "startPointId", editable: true },
+                            { type: "number", key: "endPointId", editable: true },
+                            { type: "number", key: "gotPoints", editable: true },
+                            { type: "text", key: "color", editable: true },
+                        ]} />
+                } />
             </Routes>
         </Router>
     );

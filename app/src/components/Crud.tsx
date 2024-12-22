@@ -15,6 +15,14 @@ export interface Point {
     type: string;
 }
 
+export interface Trail {
+    id: number;
+    startPointId: number; 
+    endPointId: number; 
+    gotPoints: number; 
+    color: string;
+}
+
 interface WithId {
     id: number;
 }

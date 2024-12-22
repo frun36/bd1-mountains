@@ -9,7 +9,8 @@ CREATE TABLE mountains.point
     altitude int         NOT NULL,
     type     varchar(16) NOT NULL,
     CONSTRAINT point_pk PRIMARY KEY (id),
-    CONSTRAINT point_type CHECK (type IN ('peak', 'lake', 'shelter', 'pass', 'glade', 'valley', 'signpost', 'other'))
+    CONSTRAINT point_type CHECK (type IN
+                                 ('peak', 'lake', 'shelter', 'pass', 'glade', 'valley', 'signpost', 'village', 'other'))
 );
 
 CREATE TABLE mountains.route
