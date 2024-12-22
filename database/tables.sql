@@ -1,4 +1,4 @@
-DROP SCHEMA IF EXISTS mountains;
+DROP SCHEMA IF EXISTS mountains CASCADE;
 CREATE SCHEMA mountains;
 
 -- tables
@@ -8,7 +8,8 @@ CREATE TABLE mountains.point
     name     varchar(64) NULL,
     altitude int         NOT NULL,
     type     varchar(16) NOT NULL,
-    CONSTRAINT point_pk PRIMARY KEY (id)
+    CONSTRAINT point_pk PRIMARY KEY (id),
+    CONSTRAINT point_type CHECK (type IN ('peak', 'lake', 'shelter', 'pass', 'glade', 'valley', 'signpost', 'other'))
 );
 
 CREATE TABLE mountains.route
@@ -16,7 +17,7 @@ CREATE TABLE mountains.route
     id         serial      NOT NULL,
     name       varchar(64) NOT NULL,
     user_id    int         NOT NULL,
-    date_added date        NOT NULL,
+    time_added timestamp   NOT NULL,
     CONSTRAINT route_pk PRIMARY KEY (id)
 );
 
@@ -37,7 +38,9 @@ CREATE TABLE mountains.trail
     end_point_id   int        NOT NULL,
     got_points     int        NOT NULL,
     color          varchar(8) NOT NULL,
-    CONSTRAINT trail_pk PRIMARY KEY (id)
+    CONSTRAINT trail_pk PRIMARY KEY (id),
+    CONSTRAINT trail_color CHECK (color IN ('red', 'yellow', 'green', 'blue', 'black')),
+    CONSTRAINT trail_got_points CHECK (got_points >= 0)
 );
 
 CREATE TABLE mountains."user"
@@ -46,7 +49,9 @@ CREATE TABLE mountains."user"
     username         varchar(64) NOT NULL,
     password         varchar(64) NOT NULL,
     total_got_points int         NOT NULL,
-    CONSTRAINT user_pk PRIMARY KEY (id)
+    CONSTRAINT user_pk PRIMARY KEY (id),
+    CONSTRAINT user_username UNIQUE (username),
+    CONSTRAINT user_got_points CHECK (total_got_points >= 0)
 );
 
 -- foreign keys
