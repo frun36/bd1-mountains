@@ -14,10 +14,10 @@ CREATE TABLE mountains.point
 
 CREATE TABLE mountains.route
 (
-    id         serial      NOT NULL,
-    name       varchar(64) NOT NULL,
-    user_id    int         NOT NULL,
-    time_added timestamp   NOT NULL,
+    id            serial      NOT NULL,
+    name          varchar(64) NOT NULL,
+    user_id       int         NOT NULL,
+    time_modified timestamp   NOT NULL DEFAULT now(),
     CONSTRAINT route_pk PRIMARY KEY (id)
 );
 
@@ -26,8 +26,8 @@ CREATE TABLE mountains.route_point
     id                serial NOT NULL,
     route_id          int    NOT NULL,
     current_point_id  int    NOT NULL,
-    previous_point_id int NULL,
-    next_point_id     int NULL,
+    previous_point_id int    NULL,
+    next_point_id     int    NULL,
     CONSTRAINT route_point_pk PRIMARY KEY (id)
 );
 
@@ -43,12 +43,12 @@ CREATE TABLE mountains.trail
     CONSTRAINT trail_got_points CHECK (got_points >= 0)
 );
 
-CREATE TABLE mountains."user"
+CREATE TABLE mountains.app_user
 (
     id               serial      NOT NULL,
     username         varchar(64) NOT NULL,
     password         varchar(64) NOT NULL,
-    total_got_points int         NOT NULL,
+    total_got_points int         NOT NULL DEFAULT 0,
     CONSTRAINT user_pk PRIMARY KEY (id),
     CONSTRAINT user_username UNIQUE (username),
     CONSTRAINT user_got_points CHECK (total_got_points >= 0)
@@ -98,7 +98,7 @@ ALTER TABLE mountains.route_point
 ALTER TABLE mountains.route
     ADD CONSTRAINT route_user
         FOREIGN KEY (user_id)
-            REFERENCES mountains."user" (id)
+            REFERENCES mountains.app_user (id)
             NOT DEFERRABLE
                 INITIALLY IMMEDIATE
 ;

@@ -4,7 +4,7 @@ import java.sql.Timestamp;
 import java.util.HashMap;
 import java.util.Map;
 
-public record Route(Integer id, String name, Integer userId, Timestamp timeAdded) implements DbRow {
+public record Route(Integer id, String name, Integer userId, Timestamp timeModified) implements DbRow {
     @Override
     public Integer getId() {
         return id;
@@ -16,7 +16,7 @@ public record Route(Integer id, String name, Integer userId, Timestamp timeAdded
         map.put("id", id);
         map.put("name", name);
         map.put("user_id", userId);
-        map.put("date_added", timeAdded);
+        map.put("time_modified", timeModified);
         return map;
     }
 }
