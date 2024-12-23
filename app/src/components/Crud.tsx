@@ -1,4 +1,8 @@
 import { useEffect, useState } from "react";
+import Button from "react-bootstrap/Button";
+import Table from "react-bootstrap/Table";
+import Alert from "react-bootstrap/Alert";
+import Form from "react-bootstrap/Form";
 import axios from "axios";
 
 export interface AppUser {
@@ -66,22 +70,6 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
     const [responses, setResponses] = useState<ApiResponse[]>([]);
     const [responseIdx, setResponseIdx] = useState<number>(-1);
 
-    const displayResponse = (newResponse: ApiResponse) => {
-        setResponses((prevResponses) => {
-            const newResponses = [...prevResponses, newResponse];
-            setResponseIdx(newResponses.length - 1);
-            return newResponses;
-        });
-    }
-
-    const displayError = (error: any) => {
-        if (axios.isAxiosError(error)) {
-            displayResponse({ status: error.response?.status || null, body: error.response?.data || "<empty>" });
-        } else {
-            displayResponse({ status: null, body: "Unexpected error" });
-        }
-    }
-
     // GET
     const getItems = () => {
         axios.get<R[]>(`http://localhost:8080/raw/${tableName}`)
@@ -133,12 +121,30 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
             return prevItems.map((item) => (item.id === id ? { ...item, [field]: parsedValue } : item));
         }
         );
+
     };
 
+    const displayResponse = (newResponse: ApiResponse) => {
+        setResponses((prevResponses) => {
+            const newResponses = [...prevResponses, newResponse];
+            setResponseIdx(newResponses.length - 1);
+            return newResponses;
+        });
+    }
+
+    const displayError = (error: any) => {
+        if (axios.isAxiosError(error)) {
+            displayResponse({ status: error.response?.status || null, body: error.response?.data || "<empty>" });
+        } else {
+            displayResponse({ status: null, body: "Unexpected error" });
+        }
+        getItems();
+    }
+
     return (
-        <div>
+        <div className="w-50 p-3 mx-auto">
             <h1>{tableName}</h1>
-            <table>
+            <Table>
                 <thead>
                     <tr>
                         {
@@ -146,6 +152,8 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
                                 <th key={index}>{input.key.toString()}</th>
                             ))
                         }
+                        <td></td>
+                        <td></td>
                     </tr>
                 </thead>
                 <tbody>
@@ -157,24 +165,26 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
                                     return <td key={index}>
                                         {
                                             input.editable ?
-                                                <input
-                                                    type={input.type}
-                                                    value={value ?? ""}
-                                                    onChange={(e) => handleInputChange(item.id, input.key, e.target.value)}
-                                                /> :
-                                                value
+                                                <Form.Group controlId={`input-${index}`}>
+                                                    <Form.Control
+                                                        type={input.type}
+                                                        value={value ?? ""}
+                                                        onChange={(e) => handleInputChange(item.id, input.key, e.target.value)}
+                                                    />
+                                                </Form.Group>
+                                                : value
                                         }
                                     </td>
                                 })
                             }
                             <td>
-                                <button onClick={() => {
+                                <Button onClick={() => {
                                     const { id, ...updatedItem } = item;
                                     updateItem(id, updatedItem);
-                                }}>Update</button>
+                                }}>Update</Button>
                             </td>
                             <td>
-                                <button onClick={() => deleteItem(item.id)}>Delete</button>
+                                <Button onClick={() => deleteItem(item.id)}>Delete</Button>
                             </td>
                         </tr>
                     ))}
@@ -185,35 +195,45 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
                             inputs.filter((input) => input.key != "id").map((input, index) => {
                                 const key = input.key as unknown as keyof Omit<R, "id">;
                                 return <td key={index}>
-                                    <input
-                                        type={input.type}
-                                        value={newItem[key] as string ?? ""}
-                                        onChange={(e) => setNewItem({ ...newItem, [key]: e.target.value })}
-                                    />
+                                    <Form.Group controlId={`input-${index}`}>
+                                        <Form.Control
+                                            type={input.type}
+                                            value={newItem[key] as string ?? ""}
+                                            onChange={(e) => setNewItem({ ...newItem, [key]: e.target.value })}
+                                        />
+                                    </Form.Group>
                                 </td>
                             })
                         }
                         <td>
-                            <button onClick={addItem}>Add</button>
+                            <Button onClick={addItem}>Add</Button>
                         </td>
+
+                        <td></td>
                     </tr>
                 </tbody>
-            </table>
+            </Table>
             <div>
                 {
                     responseIdx != -1 ?
                         <div>
                             <h2>HTTP response ({responseIdx + 1}/{responses.length})</h2>
-                            <button onClick={() => setResponseIdx((currIdx) => currIdx > 0 ? currIdx - 1 : currIdx)}>Previous</button>
-                            <button onClick={() => setResponseIdx((currIdx) => currIdx < responses.length - 1 ? currIdx + 1 : currIdx)}>Next</button>
-                            <button onClick={() => { setResponses([]); setResponseIdx(-1) }}>Clear</button>
-                            <h3
-                                style={{
-                                    color: responses[responseIdx].status && responses[responseIdx].status >= 200 && responses[responseIdx].status < 300
-                                        ? "green"
-                                        : "red",
-                                }}>{responses[responseIdx].status ?? "Unexpected"}</h3>
-                            <p>{JSON.stringify(responses[responseIdx].body) ?? "<empty>"}</p>
+                            <Button onClick={() => setResponseIdx((currIdx) => currIdx > 0 ? currIdx - 1 : currIdx)}>Previous</Button>
+                            <Button onClick={() => setResponseIdx((currIdx) => currIdx < responses.length - 1 ? currIdx + 1 : currIdx)}>Next</Button>
+                            <Button onClick={() => { setResponses([]); setResponseIdx(-1) }}>Clear</Button>
+                            <Alert variant={
+                                responses[responseIdx].status && responses[responseIdx].status >= 200 && responses[responseIdx].status < 300
+                                    ? "success"
+                                    : "danger"}>
+
+                                <h3
+                                    style={{
+                                        color: responses[responseIdx].status && responses[responseIdx].status >= 200 && responses[responseIdx].status < 300
+                                            ? "green"
+                                            : "red",
+                                    }}>{responses[responseIdx].status ?? "Unexpected"}</h3>
+                                <p>{JSON.stringify(responses[responseIdx].body) ?? "<empty>"}</p>
+                            </Alert>
                         </div> : null
                 }
             </div>
