@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
@@ -15,12 +16,12 @@ public class CrudService {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    public List<DbRow> getAll(String tableName) {
+    public List<DbRow> getAll(String tableName) throws DataAccessException {
         String sql = String.format("SELECT * FROM mountains.%s", tableName);
         return jdbcTemplate.query(sql, (rs, rowNum) -> DbRow.parseResultSet(rs, tableName));
     }
 
-    public DbRow getById(String tableName,  int id) {
+    public DbRow getById(String tableName,  int id) throws DataAccessException {
         String sql = String.format("SELECT * FROM mountains.%s WHERE id = ?", tableName);
         List<DbRow> result = jdbcTemplate.query(sql, (rs, rowNum) -> DbRow.parseResultSet(rs, tableName), id);
 
@@ -30,7 +31,7 @@ public class CrudService {
             return null;
     }
 
-    public Integer create(String tableName, DbRow item) {
+    public Integer create(String tableName, DbRow item) throws DataAccessException {
         List<String> names = new ArrayList<>();
         List<Object> values = new ArrayList<>();
 
@@ -52,7 +53,7 @@ public class CrudService {
         return jdbcTemplate.queryForObject(sql, Integer.class, values.toArray());
     }
 
-    public boolean update(String tableName, int id, DbRow item) {
+    public boolean update(String tableName, int id, DbRow item) throws DataAccessException {
         List<String> names = new ArrayList<>();
         List<Object> values = new ArrayList<>();
 
@@ -73,7 +74,7 @@ public class CrudService {
         return rowsUpdated > 0;
     }
 
-    public boolean delete(String tableName, int id) {
+    public boolean delete(String tableName, int id) throws DataAccessException {
         String sql = String.format("DELETE FROM mountains.%s WHERE id = ?", tableName);
         int rowsDeleted = jdbcTemplate.update(sql, id);
         return rowsDeleted > 0;
