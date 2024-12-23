@@ -54,46 +54,77 @@ interface Props<T extends WithId> {
     inputs: Input<T>[];
 }
 
+interface ApiResponse {
+    status: number | null;
+    body: any;
+}
+
 
 export default function Crud<R extends WithId>({ tableName, defaultItem, inputs }: Props<R>) {
     const [items, setItems] = useState<R[]>([]);
     const [newItem, setNewItem] = useState(defaultItem);
+    const [responses, setResponses] = useState<ApiResponse[]>([]);
+    const [responseIdx, setResponseIdx] = useState<number>(-1);
+
+    const displayResponse = (newResponse: ApiResponse) => {
+        setResponses((prevResponses) => {
+            const newResponses = [...prevResponses, newResponse];
+            setResponseIdx(newResponses.length - 1);
+            return newResponses;
+        });
+    }
+
+    const displayError = (error: any) => {
+        if (axios.isAxiosError(error)) {
+            displayResponse({ status: error.response?.status || null, body: error.response?.data || "<empty>" });
+        } else {
+            displayResponse({ status: null, body: "Unexpected error" });
+        }
+    }
 
     // GET
     const getItems = () => {
         axios.get<R[]>(`http://localhost:8080/raw/${tableName}`)
-            .then((response) => response.data ? setItems(response.data) : null)
-            .catch((error) => console.error("Error fetching items:", error))
+            .then((response) => {
+                displayResponse({ status: response.status, body: response.data });
+                if (response.data) {
+                    setItems(response.data);
+                }
+            })
+            .catch(displayError)
     };
     useEffect(getItems, []);
 
     // PUT
     const updateItem = (id: number, updatedItem: Omit<R, "id">) => {
         axios.put(`http://localhost:8080/raw/${tableName}/${id}`, updatedItem)
-            .then(() => {
+            .then((response) => {
+                displayResponse({ status: response.status, body: response.data });
                 getItems();
             })
-            .catch((error) => console.error("Error updating item:", error));
+            .catch(displayError)
     };
 
     // DELETE
     const deleteItem = (id: number) => {
         axios.delete(`http://localhost:8080/raw/${tableName}/${id}`)
-            .then(() => {
+            .then((response) => {
+                displayResponse({ status: response.status, body: response.data });
                 getItems();
             })
-            .catch((error) => console.error("Error deleting item:", error));
+            .catch(displayError)
     };
 
     // POST
     const addItem = () => {
         console.log(newItem);
         axios.post<R>(`http://localhost:8080/raw/${tableName}`, newItem)
-            .then(() => {
+            .then((response) => {
+                displayResponse({ status: response.status, body: response.data });
                 getItems();
                 setNewItem(defaultItem);
             })
-            .catch((error) => console.error("Error adding item:", error));
+            .catch(displayError)
     };
 
     const handleInputChange = (id: number, field: keyof R, value: string) => {
@@ -138,7 +169,7 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
                             }
                             <td>
                                 <button onClick={() => {
-                                    const {id, ...updatedItem} = item;
+                                    const { id, ...updatedItem } = item;
                                     updateItem(id, updatedItem);
                                 }}>Update</button>
                             </td>
@@ -168,6 +199,24 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
                     </tr>
                 </tbody>
             </table>
+            <div>
+                {
+                    responseIdx != -1 ?
+                        <div>
+                            <h2>HTTP response ({responseIdx + 1}/{responses.length})</h2>
+                            <button onClick={() => setResponseIdx((currIdx) => currIdx > 0 ? currIdx - 1 : currIdx)}>Previous</button>
+                            <button onClick={() => setResponseIdx((currIdx) => currIdx < responses.length - 1 ? currIdx + 1 : currIdx)}>Next</button>
+                            <button onClick={() => { setResponses([]); setResponseIdx(-1) }}>Clear</button>
+                            <h3
+                                style={{
+                                    color: responses[responseIdx].status && responses[responseIdx].status >= 200 && responses[responseIdx].status < 300
+                                        ? "green"
+                                        : "red",
+                                }}>{responses[responseIdx].status ?? "Unexpected"}</h3>
+                            <p>{JSON.stringify(responses[responseIdx].body) ?? "<empty>"}</p>
+                        </div> : null
+                }
+            </div>
         </div>
     );
 };
