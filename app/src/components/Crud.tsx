@@ -137,6 +137,12 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
                                 })
                             }
                             <td>
+                                <button onClick={() => {
+                                    const {id, ...updatedItem} = item;
+                                    updateItem(id, updatedItem);
+                                }}>Update</button>
+                            </td>
+                            <td>
                                 <button onClick={() => deleteItem(item.id)}>Delete</button>
                             </td>
                         </tr>
