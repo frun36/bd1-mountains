@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import Button from "react-bootstrap/Button";
 import Table from "react-bootstrap/Table";
-import Alert from "react-bootstrap/Alert";
+import ApiResponsePanel, { ApiResponse } from "./ApiResponsePanel";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 
@@ -21,17 +21,23 @@ interface Props<T extends WithId> {
     inputs: Input<T>[];
 }
 
-interface ApiResponse {
-    status: number | null;
-    body: any;
-}
-
-
 export default function Crud<R extends WithId>({ tableName, defaultItem, inputs }: Props<R>) {
     const [items, setItems] = useState<R[]>([]);
     const [newItem, setNewItem] = useState(defaultItem);
     const [responses, setResponses] = useState<ApiResponse[]>([]);
-    const [responseIdx, setResponseIdx] = useState<number>(-1);
+
+    const displayResponse = (newResponse: ApiResponse) => {
+        setResponses((prevResponses) => [...prevResponses, newResponse]);
+    }
+
+    const displayError = (error: any) => {
+        if (axios.isAxiosError(error)) {
+            displayResponse({ status: error.response?.status || null, body: error.response?.data || "<empty>" });
+        } else {
+            displayResponse({ status: null, body: "Unexpected error" });
+        }
+        getItems();
+    }
 
     // GET
     const getItems = () => {
@@ -87,23 +93,6 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
 
     };
 
-    const displayResponse = (newResponse: ApiResponse) => {
-        setResponses((prevResponses) => {
-            const newResponses = [...prevResponses, newResponse];
-            setResponseIdx(newResponses.length - 1);
-            return newResponses;
-        });
-    }
-
-    const displayError = (error: any) => {
-        if (axios.isAxiosError(error)) {
-            displayResponse({ status: error.response?.status || null, body: error.response?.data || "<empty>" });
-        } else {
-            displayResponse({ status: null, body: "Unexpected error" });
-        }
-        getItems();
-    }
-
     return (
         <div className="w-50 p-3 mx-auto">
             <h1>{tableName}</h1>
@@ -141,13 +130,13 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
                                 })
                             }
                             <td>
-                                <Button onClick={() => {
+                                <Button variant="warning" onClick={() => {
                                     const { id, ...updatedItem } = item;
                                     updateItem(id, updatedItem);
                                 }}>Update</Button>
                             </td>
                             <td>
-                                <Button onClick={() => deleteItem(item.id)}>Delete</Button>
+                                <Button variant="danger" onClick={() => deleteItem(item.id)}>Delete</Button>
                             </td>
                         </tr>
                     ))}
@@ -169,37 +158,14 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
                             })
                         }
                         <td>
-                            <Button onClick={addItem}>Add</Button>
+                            <Button variant="success" onClick={addItem}>Add</Button>
                         </td>
 
                         <td></td>
                     </tr>
                 </tbody>
             </Table>
-            <div>
-                {
-                    responseIdx != -1 ?
-                        <div>
-                            <h2>HTTP response ({responseIdx + 1}/{responses.length})</h2>
-                            <Button onClick={() => setResponseIdx((currIdx) => currIdx > 0 ? currIdx - 1 : currIdx)}>Previous</Button>
-                            <Button onClick={() => setResponseIdx((currIdx) => currIdx < responses.length - 1 ? currIdx + 1 : currIdx)}>Next</Button>
-                            <Button onClick={() => { setResponses([]); setResponseIdx(-1) }}>Clear</Button>
-                            <Alert variant={
-                                responses[responseIdx].status && responses[responseIdx].status >= 200 && responses[responseIdx].status < 300
-                                    ? "success"
-                                    : "danger"}>
-
-                                <h3
-                                    style={{
-                                        color: responses[responseIdx].status && responses[responseIdx].status >= 200 && responses[responseIdx].status < 300
-                                            ? "green"
-                                            : "red",
-                                    }}>{responses[responseIdx].status ?? "Unexpected"}</h3>
-                                <p>{JSON.stringify(responses[responseIdx].body) ?? "<empty>"}</p>
-                            </Alert>
-                        </div> : null
-                }
-            </div>
+            <ApiResponsePanel responses={responses} />
         </div>
     );
 };

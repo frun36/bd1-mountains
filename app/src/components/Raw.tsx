@@ -43,7 +43,7 @@ interface RoutePoint {
 export default function Raw() {
     return <div>
             <h1>Raw operations</h1>
-            <Link to="/">back</Link>
+            <p><Link to="/">back</Link></p>
             <Tabs defaultActiveKey="appUser">
                 <Tab eventKey="appUser" title="app_user">
                     <Crud<AppUser>
