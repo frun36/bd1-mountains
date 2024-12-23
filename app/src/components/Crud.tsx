@@ -61,15 +61,15 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
 
     // GET
     const getItems = () => {
-        axios.get<R[]>(`http://localhost:8080/${tableName}`)
-            .then((response) => setItems(response.data))
+        axios.get<R[]>(`http://localhost:8080/raw/${tableName}`)
+            .then((response) => response.data ? setItems(response.data) : null)
             .catch((error) => console.error("Error fetching items:", error))
     };
     useEffect(getItems, []);
 
     // PUT
     const updateItem = (id: number, updatedItem: Omit<R, "id">) => {
-        axios.put(`http://localhost:8080/${tableName}`, updatedItem, { params: { id: id } })
+        axios.put(`http://localhost:8080/raw/${tableName}/${id}`, updatedItem)
             .then(() => {
                 getItems();
             })
@@ -78,7 +78,7 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
 
     // DELETE
     const deleteItem = (id: number) => {
-        axios.delete(`http://localhost:8080/${tableName}`, { params: { id: id } })
+        axios.delete(`http://localhost:8080/raw/${tableName}/${id}`)
             .then(() => {
                 getItems();
             })
@@ -88,7 +88,7 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
     // POST
     const addItem = () => {
         console.log(newItem);
-        axios.post<R>(`http://localhost:8080/${tableName}`, newItem)
+        axios.post<R>(`http://localhost:8080/raw/${tableName}`, newItem)
             .then(() => {
                 getItems();
                 setNewItem(defaultItem);

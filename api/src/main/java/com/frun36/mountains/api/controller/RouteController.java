@@ -4,14 +4,14 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.frun36.mountains.api.model.Point;
+import com.frun36.mountains.api.model.Route;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/raw/point")
-public class PointController extends CrudController<Point> {
+@RequestMapping("/raw/route")
+public class RouteController extends CrudController<Route> {
     @Override
     protected String getTableName() {
-        return "point";
+        return "route";
     }
 }

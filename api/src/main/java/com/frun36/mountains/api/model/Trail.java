@@ -1,4 +1,4 @@
-package com.frun36.model;
+package com.frun36.mountains.api.model;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -6,12 +6,7 @@ import java.util.Map;
 public record Trail(Integer id, Integer startPointId, Integer endPointId, Integer gotPoints, String color)
         implements DbRow {
     @Override
-    public Integer getId() {
-        return id;
-    }
-
-    @Override
-    public Map<String, Object> getMap() {
+    public Map<String, Object> asMap() {
         Map<String, Object> map = new HashMap<String, Object>();
         map.put("id", id);
         map.put("start_point_id", startPointId);
