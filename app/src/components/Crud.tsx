@@ -5,43 +5,6 @@ import Alert from "react-bootstrap/Alert";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 
-export interface AppUser {
-    id: number;
-    username: string | null;
-    password: string | null;
-    totalGotPoints: number | null;
-}
-
-export interface Point {
-    id: number;
-    name: string | null;
-    altitude: number | null;
-    type: string | null;
-}
-
-export interface Trail {
-    id: number;
-    startPointId: number | null;
-    endPointId: number | null;
-    gotPoints: number | null;
-    color: string | null;
-}
-
-export interface Route {
-    id: number;
-    name: string | null;
-    userId: number | null;
-    timeModified: string | null;
-}
-
-export interface RoutePoint {
-    id: number;
-    routeId: number | null;
-    currentPointId: number | null;
-    previousPointId: number | null;
-    nextPointId: number | null;
-}
-
 interface WithId {
     id: number;
 }
