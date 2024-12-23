@@ -1,4 +1,4 @@
-TRUNCATE mountains.point, mountains.trail, mountains.app_user, mountains.route, mountains.route_point;
+TRUNCATE mountains.point, mountains.trail, mountains.app_user, mountains.route, mountains.route_trail;
 
 INSERT INTO mountains.point (id, name, altitude, type)
 VALUES (1, 'Schronisko Murowaniec', 1500, 'shelter'),
@@ -69,6 +69,60 @@ VALUES (1, 1, 2, 6, 'yellow'),
        (44, 18, 19, 3, 'yellow'),
        (45, 18, 19, 3, 'blue'),
        (46, 18, 1, 1, 'blue'),
-       (47, 1, 18, 1, 'blue');
-ALTER SEQUENCE mountains.trail_id_seq RESTART WITH 48;
+       (47, 1, 18, 1, 'blue'),
+       (48, 13,4, 8, 'yellow'),
+       (49, 4, 13, 2, 'yellow');
+ALTER SEQUENCE mountains.trail_id_seq RESTART WITH 50;
 
+INSERT INTO mountains.app_user(id, username, password, total_got_points)
+VALUES (1, 'frun36', 'qwerty', 0),
+       (2, 'test', 'test', 0);
+ALTER SEQUENCE mountains.app_user_id_seq RESTART WITH 3;
+
+INSERT INTO mountains.route(id, name, user_id, time_modified)
+VALUES (1, 'Kościelec z Kuźnic', 1, now()),
+       (2, 'Granaty z Kuźnic', 1, now()),
+       (3, 'Orla Perć z Murowańca', 2, now());
+ALTER SEQUENCE mountains.route_id_seq RESTART WITH 4;
+
+INSERT INTO mountains.route_trail(id, route_id, trail_id, prev_id, next_id)
+VALUES (1, 1, 42, null, 2),
+       (2, 1, 46, 1, 3),
+       (3, 1, 40, 2, 4),
+       (4, 1, 26, 3, 5),
+       (5, 1, 28, 4, 6),
+       (6, 1, 29, 5, 7),
+       (7, 1, 25, 6, 8),
+       (8, 1, 20, 7, 9),
+       (9, 1, 23, 8, 10),
+       (10, 1, 47, 9, 11),
+       (11, 1, 45, 10, null);
+INSERT INTO mountains.route_trail(id, route_id, trail_id, prev_id, next_id)
+VALUES (12, 2, 43, null, 13),
+       (13, 2, 46, 12, 14),
+       (14, 2, 40, 13, 15),
+       (15, 2, 48, 14, 16),
+       (16, 2, 7, 15, 17),
+       (17, 2, 9, 16, 18),
+       (18, 2, 37, 17, 19),
+       (19, 2, 33, 18, 20),
+       (20, 2, 41, 19, 21),
+       (21, 2, 47, 20, 22),
+       (22, 2, 45, 21, null);
+ALTER SEQUENCE mountains.route_trail_id_seq RESTART WITH 23;
+
+SELECT p.name
+FROM mountains.route_trail rt
+    JOIN mountains.trail t ON t.id = rt.trail_id
+    JOIN mountains.point p ON t.start_point_id = p.id;
+
+
+WITH RECURSIVE route_trail_list AS (
+    SELECT route_id, 1 as position, id, trail_id FROM mountains.route_trail WHERE prev_id IS NULL
+
+    UNION ALL
+
+    SELECT rt.route_id, rtl.position + 1, rt.id, rt.trail_id
+    FROM route_trail_list rtl JOIN mountains.route_trail rt ON rtl.id = rt.prev_id
+)
+SELECT * FROM route_trail_list ORDER BY route_id, position;

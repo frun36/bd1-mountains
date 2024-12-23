@@ -32,12 +32,12 @@ interface Route {
     timeModified: string | null;
 }
 
-interface RoutePoint {
+interface RouteTrail {
     id: number;
     routeId: number | null;
-    currentPointId: number | null;
-    previousPointId: number | null;
-    nextPointId: number | null;
+    trailId: number | null;
+    prevId: number | null;
+    nextId: number | null;
 }
 
 export default function Raw() {
@@ -94,16 +94,16 @@ export default function Raw() {
                         ]}
                     />
                 </Tab>
-                <Tab eventKey="routePoint" title="route_point">
-                    <Crud<RoutePoint>
-                        tableName="route_point"
-                        defaultItem={{ routeId: null, currentPointId: null, previousPointId: null, nextPointId: null }}
+                <Tab eventKey="routeTrail" title="route_trail">
+                    <Crud<RouteTrail>
+                        tableName="route_trail"
+                        defaultItem={{ routeId: null, trailId: null, prevId: null, nextId: null }}
                         inputs={[
                             { type: "number", key: "id", editable: false },
                             { type: "number", key: "routeId", editable: true },
-                            { type: "number", key: "currentPointId", editable: true },
-                            { type: "number", key: "previousPointId", editable: true },
-                            { type: "number", key: "nextPointId", editable: true },
+                            { type: "number", key: "trailId", editable: true },
+                            { type: "number", key: "prevId", editable: true },
+                            { type: "number", key: "nextId", editable: true },
                         ]}
                     />
                 </Tab>

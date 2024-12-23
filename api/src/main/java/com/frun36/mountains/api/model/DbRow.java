@@ -27,12 +27,12 @@ public interface DbRow {
                     rs.getInt("user_id"),
                     rs.getTimestamp("time_modified"));
 
-            case "route_point" -> new RoutePoint(
+            case "route_trail" -> new RouteTrail(
                     rs.getInt("id"),
                     rs.getInt("route_id"),
-                    rs.getInt("current_point_id"),
-                    rs.getInt("previous_point_id"),
-                    rs.getInt("next_point_id"));
+                    rs.getInt("trail_id"),
+                    rs.getInt("prev_id"),
+                    rs.getInt("next_id"));
 
             case "trail" -> new Trail(
                     rs.getInt("id"),

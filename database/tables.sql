@@ -22,14 +22,14 @@ CREATE TABLE mountains.route
     CONSTRAINT route_pk PRIMARY KEY (id)
 );
 
-CREATE TABLE mountains.route_point
+CREATE TABLE mountains.route_trail
 (
-    id                serial NOT NULL,
-    route_id          int    NOT NULL,
-    current_point_id  int    NOT NULL,
-    previous_point_id int    NULL,
-    next_point_id     int    NULL,
-    CONSTRAINT route_point_pk PRIMARY KEY (id)
+    id       serial NOT NULL,
+    route_id int    NOT NULL,
+    trail_id int    NOT NULL,
+    prev_id  int    NULL,
+    next_id  int    NULL,
+    CONSTRAINT route_trail_pk PRIMARY KEY (id)
 );
 
 CREATE TABLE mountains.trail
@@ -64,32 +64,32 @@ ALTER TABLE mountains.trail
                 INITIALLY IMMEDIATE
 ;
 
-ALTER TABLE mountains.route_point
-    ADD CONSTRAINT route_point_current_point
-        FOREIGN KEY (current_point_id)
-            REFERENCES mountains.point (id)
+ALTER TABLE mountains.route_trail
+    ADD CONSTRAINT route_trail_current_trail
+        FOREIGN KEY (trail_id)
+            REFERENCES mountains.trail (id)
             NOT DEFERRABLE
                 INITIALLY IMMEDIATE
 ;
 
-ALTER TABLE mountains.route_point
-    ADD CONSTRAINT route_point_next_point
-        FOREIGN KEY (next_point_id)
-            REFERENCES mountains.route_point (id)
+ALTER TABLE mountains.route_trail
+    ADD CONSTRAINT route_trail_prev
+        FOREIGN KEY (prev_id)
+            REFERENCES mountains.route_trail (id)
             NOT DEFERRABLE
                 INITIALLY IMMEDIATE
 ;
 
-ALTER TABLE mountains.route_point
-    ADD CONSTRAINT route_point_previous_point
-        FOREIGN KEY (previous_point_id)
-            REFERENCES mountains.route_point (id)
+ALTER TABLE mountains.route_trail
+    ADD CONSTRAINT route_trail_next
+        FOREIGN KEY (next_id)
+            REFERENCES mountains.route_trail (id)
             NOT DEFERRABLE
                 INITIALLY IMMEDIATE
 ;
 
-ALTER TABLE mountains.route_point
-    ADD CONSTRAINT route_point_route
+ALTER TABLE mountains.route_trail
+    ADD CONSTRAINT route_trail_route
         FOREIGN KEY (route_id)
             REFERENCES mountains.route (id)
             NOT DEFERRABLE
