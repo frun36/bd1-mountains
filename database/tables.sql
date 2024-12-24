@@ -29,7 +29,9 @@ CREATE TABLE mountains.route_trail
     trail_id int    NOT NULL,
     prev_id  int    NULL,
     next_id  int    NULL,
-    CONSTRAINT route_trail_pk PRIMARY KEY (id)
+    CONSTRAINT route_trail_pk PRIMARY KEY (id),
+    CONSTRAINT route_trail_prev_unique UNIQUE (prev_id),
+    CONSTRAINT route_trail_next_unique UNIQUE (next_id)
 );
 
 CREATE TABLE mountains.trail
@@ -111,3 +113,26 @@ ALTER TABLE mountains.trail
             NOT DEFERRABLE
                 INITIALLY IMMEDIATE
 ;
+
+-- views
+CREATE OR REPLACE VIEW mountains.route_trail_ordered AS
+(
+WITH RECURSIVE route_trail_list AS (SELECT route_id, 1 as ordinal, id, trail_id
+                                    FROM mountains.route_trail
+                                    WHERE prev_id IS NULL
+
+                                    UNION ALL
+
+                                    SELECT rt.route_id, rtl.ordinal + 1, rt.id, rt.trail_id
+                                    FROM route_trail_list rtl
+                                             JOIN mountains.route_trail rt ON rtl.id = rt.prev_id)
+SELECT *
+FROM route_trail_list
+);
+
+SELECT rt.ordinal, p1.name, p1.altitude, p2.name, p2.altitude, t.color, t.got_points FROM mountains.route_trail_ordered rt
+    JOIN mountains.trail t ON rt.trail_id = t.id
+    JOIN mountains.point p1 ON t.start_point_id = p1.id
+    JOIN mountains.point p2 ON t.end_point_id = p2.id
+    WHERE rt.route_id = 2
+    ORDER BY rt.ordinal;

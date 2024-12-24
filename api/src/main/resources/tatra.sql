@@ -70,7 +70,7 @@ VALUES (1, 1, 2, 6, 'yellow'),
        (45, 18, 19, 3, 'blue'),
        (46, 18, 1, 1, 'blue'),
        (47, 1, 18, 1, 'blue'),
-       (48, 13,4, 8, 'yellow'),
+       (48, 13, 4, 8, 'yellow'),
        (49, 4, 13, 2, 'yellow');
 ALTER SEQUENCE mountains.trail_id_seq RESTART WITH 50;
 
@@ -113,16 +113,8 @@ ALTER SEQUENCE mountains.route_trail_id_seq RESTART WITH 23;
 
 SELECT p.name
 FROM mountains.route_trail rt
-    JOIN mountains.trail t ON t.id = rt.trail_id
-    JOIN mountains.point p ON t.start_point_id = p.id;
+         JOIN mountains.trail t ON t.id = rt.trail_id
+         JOIN mountains.point p ON t.start_point_id = p.id;
 
 
-WITH RECURSIVE route_trail_list AS (
-    SELECT route_id, 1 as position, id, trail_id FROM mountains.route_trail WHERE prev_id IS NULL
 
-    UNION ALL
-
-    SELECT rt.route_id, rtl.position + 1, rt.id, rt.trail_id
-    FROM route_trail_list rtl JOIN mountains.route_trail rt ON rtl.id = rt.prev_id
-)
-SELECT * FROM route_trail_list ORDER BY route_id, position;
