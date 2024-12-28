@@ -128,11 +128,114 @@ WITH RECURSIVE route_trail_list AS (SELECT route_id, 1 as ordinal, id, trail_id
                                              JOIN mountains.route_trail rt ON rtl.id = rt.prev_id)
 SELECT *
 FROM route_trail_list
-);
+    );
 
-SELECT rt.ordinal, p1.name, p1.altitude, p2.name, p2.altitude, t.color, t.got_points FROM mountains.route_trail_ordered rt
-    JOIN mountains.trail t ON rt.trail_id = t.id
-    JOIN mountains.point p1 ON t.start_point_id = p1.id
-    JOIN mountains.point p2 ON t.end_point_id = p2.id
-    WHERE rt.route_id = 2
-    ORDER BY rt.ordinal;
+-- functions and triggers
+CREATE OR REPLACE FUNCTION mountains.route_count_nulls(route_id INT, col_name TEXT)
+    RETURNS INTEGER AS
+$$
+DECLARE
+    count INT;
+BEGIN
+    EXECUTE format('SELECT count(*) FROM mountains.route_trail WHERE route_id = $1 AND %I IS NULL', col_name)
+        INTO count
+        USING route_id;
+
+    RETURN count;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION mountains.route_find_incoherence(route_id INT)
+    RETURNS INTEGER AS
+$$
+DECLARE
+    prev_end_id   INT;
+    points_cursor CURSOR FOR
+        SELECT t.start_point_id, t.end_point_id
+        FROM mountains.route_trail_ordered rt
+                 JOIN mountains.trail t ON rt.trail_id = t.id
+        WHERE rt.route_id = route_find_incoherence.route_id;
+    points_record RECORD;
+BEGIN
+    prev_end_id := NULL;
+    OPEN points_cursor;
+
+    LOOP
+        FETCH points_cursor INTO points_record;
+        EXIT WHEN NOT FOUND;
+
+        IF prev_end_id IS NOT NULL AND points_record.start_point_id != prev_end_id THEN
+            RETURN prev_end_id;
+        END IF;
+
+        prev_end_id := points_record.end_point_id;
+    END LOOP;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION mountains.route_validate(route_id INT)
+    RETURNS VOID AS
+$$
+DECLARE
+    all_count   INT;
+    start_count INT;
+    end_count   INT;
+    incoherence INT;
+BEGIN
+    SELECT * FROM mountains.route_trail rt WHERE rt.route_id = route_validate.route_id INTO all_count;
+
+    IF all_count = 0 THEN RETURN; END IF;
+
+    SELECT mountains.route_count_nulls(route_id, 'prev_id') INTO start_count;
+    IF NOT start_count = 1 THEN
+        RAISE EXCEPTION 'Route should have exactly one starting trail - found %', start_count;
+    END IF;
+
+    SELECT mountains.route_count_nulls(route_id, 'next_id') INTO end_count;
+    IF NOT end_count = 1 THEN
+        RAISE EXCEPTION 'Route should have exactly one ending trail - found %', end_count;
+    END IF;
+
+    SELECT mountains.route_find_incoherence(route_id) INTO incoherence;
+    IF incoherence IS NOT NULL THEN
+        RAISE EXCEPTION 'Incoherence found after %', incoherence;
+    END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION mountains.route_append(route_id INT, trail_id INT)
+    RETURNS INTEGER AS
+$$
+DECLARE
+    trail_count INT;
+    last_id     INT;
+    inserted_id INT;
+BEGIN
+    SELECT count(*) FROM mountains.route_trail rt WHERE rt.route_id = route_append.route_id INTO trail_count;
+
+    IF trail_count = 0 THEN
+        RAISE INFO 'First trail in route';
+        INSERT INTO mountains.route_trail (route_id, trail_id, prev_id, next_id)
+        VALUES (route_append.route_id, route_append.trail_id, NULL, NULL)
+        RETURNING id INTO inserted_id;
+    ELSE
+        SELECT id FROM mountains.route_trail rt WHERE rt.route_id = route_append.route_id AND rt.next_id IS NULL INTO last_id;
+
+        INSERT INTO mountains.route_trail (route_id, trail_id, prev_id, next_id)
+        VALUES (route_append.route_id, route_append.trail_id, last_id, NULL)
+        RETURNING id INTO inserted_id;
+
+        UPDATE mountains.route_trail
+        SET next_id = inserted_id
+        WHERE id = last_id;
+    END IF;
+
+    RAISE INFO 'Last ID: %', last_id;
+    RAISE INFO 'Inserted ID: %', inserted_id;
+
+    PERFORM mountains.route_validate(route_id);
+
+    RETURN inserted_id;
+END;
+$$ LANGUAGE plpgsql;

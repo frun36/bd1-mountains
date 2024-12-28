@@ -85,36 +85,34 @@ VALUES (1, 'Kościelec z Kuźnic', 1, now()),
        (3, 'Orla Perć z Murowańca', 2, now());
 ALTER SEQUENCE mountains.route_id_seq RESTART WITH 4;
 
-INSERT INTO mountains.route_trail(id, route_id, trail_id, prev_id, next_id)
-VALUES (1, 1, 42, null, 2),
-       (2, 1, 46, 1, 3),
-       (3, 1, 40, 2, 4),
-       (4, 1, 26, 3, 5),
-       (5, 1, 28, 4, 6),
-       (6, 1, 29, 5, 7),
-       (7, 1, 25, 6, 8),
-       (8, 1, 20, 7, 9),
-       (9, 1, 23, 8, 10),
-       (10, 1, 47, 9, 11),
-       (11, 1, 45, 10, null);
-INSERT INTO mountains.route_trail(id, route_id, trail_id, prev_id, next_id)
-VALUES (12, 2, 43, null, 13),
-       (13, 2, 46, 12, 14),
-       (14, 2, 40, 13, 15),
-       (15, 2, 48, 14, 16),
-       (16, 2, 7, 15, 17),
-       (17, 2, 9, 16, 18),
-       (18, 2, 37, 17, 19),
-       (19, 2, 33, 18, 20),
-       (20, 2, 41, 19, 21),
-       (21, 2, 47, 20, 22),
-       (22, 2, 45, 21, null);
-ALTER SEQUENCE mountains.route_trail_id_seq RESTART WITH 23;
+DO $$
+BEGIN
+    PERFORM mountains.route_append(1, 42);
+    PERFORM mountains.route_append(1, 46);
+    PERFORM mountains.route_append(1, 40);
+    PERFORM mountains.route_append(1, 26);
+    PERFORM mountains.route_append(1, 28);
+    PERFORM mountains.route_append(1, 29);
+    PERFORM mountains.route_append(1, 25);
+    PERFORM mountains.route_append(1, 20);
+    PERFORM mountains.route_append(1, 23);
+    PERFORM mountains.route_append(1, 47);
+    PERFORM mountains.route_append(1, 45);
+END $$;
 
-SELECT p.name
-FROM mountains.route_trail rt
-         JOIN mountains.trail t ON t.id = rt.trail_id
-         JOIN mountains.point p ON t.start_point_id = p.id;
+DO $$
+BEGIN
+    PERFORM mountains.route_append(2, 43);
+    PERFORM mountains.route_append(2, 46);
+    PERFORM mountains.route_append(2, 40);
+    PERFORM mountains.route_append(2, 48);
+    PERFORM mountains.route_append(2, 7);
+    PERFORM mountains.route_append(2, 9);
+    PERFORM mountains.route_append(2, 37);
+    PERFORM mountains.route_append(2, 33);
+    PERFORM mountains.route_append(2, 41);
+    PERFORM mountains.route_append(2, 47);
+    PERFORM mountains.route_append(2, 45);
+END $$;
 
-
-
+SELECT * FROM mountains.route_trail_ordered WHERE route_id = 1;
