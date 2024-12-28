@@ -85,34 +85,57 @@ VALUES (1, 'Kościelec z Kuźnic', 1, now()),
        (3, 'Orla Perć z Murowańca', 2, now());
 ALTER SEQUENCE mountains.route_id_seq RESTART WITH 4;
 
-DO $$
-BEGIN
-    PERFORM mountains.route_append(1, 42);
-    PERFORM mountains.route_append(1, 46);
-    PERFORM mountains.route_append(1, 40);
-    PERFORM mountains.route_append(1, 26);
-    PERFORM mountains.route_append(1, 28);
-    PERFORM mountains.route_append(1, 29);
-    PERFORM mountains.route_append(1, 25);
-    PERFORM mountains.route_append(1, 20);
-    PERFORM mountains.route_append(1, 23);
-    PERFORM mountains.route_append(1, 47);
-    PERFORM mountains.route_append(1, 45);
-END $$;
+DO
+$$
+    BEGIN
+        PERFORM mountains.route_append(1, 42);
+        PERFORM mountains.route_append(1, 46);
+        PERFORM mountains.route_append(1, 40);
+        PERFORM mountains.route_append(1, 26);
+        PERFORM mountains.route_append(1, 28);
+        PERFORM mountains.route_append(1, 29);
+        PERFORM mountains.route_append(1, 25);
+        PERFORM mountains.route_append(1, 20);
+        PERFORM mountains.route_append(1, 23);
+        PERFORM mountains.route_append(1, 47);
+        PERFORM mountains.route_append(1, 45);
+    END
+$$;
 
-DO $$
-BEGIN
-    PERFORM mountains.route_append(2, 43);
-    PERFORM mountains.route_append(2, 46);
-    PERFORM mountains.route_append(2, 40);
-    PERFORM mountains.route_append(2, 48);
-    PERFORM mountains.route_append(2, 7);
-    PERFORM mountains.route_append(2, 9);
-    PERFORM mountains.route_append(2, 37);
-    PERFORM mountains.route_append(2, 33);
-    PERFORM mountains.route_append(2, 41);
-    PERFORM mountains.route_append(2, 47);
-    PERFORM mountains.route_append(2, 45);
-END $$;
+DO
+$$
+    BEGIN
+        PERFORM mountains.route_append(2, 43);
+        PERFORM mountains.route_append(2, 46);
+        PERFORM mountains.route_append(2, 40);
+        PERFORM mountains.route_append(2, 48);
+        PERFORM mountains.route_append(2, 7);
+        PERFORM mountains.route_append(2, 9);
+        PERFORM mountains.route_append(2, 37);
+        PERFORM mountains.route_append(2, 33);
+        PERFORM mountains.route_append(2, 41);
+        PERFORM mountains.route_append(2, 47);
+        PERFORM mountains.route_append(2, 45);
+    END
+$$;
 
-SELECT * FROM mountains.route_trail_ordered WHERE route_id = 1;
+SELECT NULL        as ordinal,
+       t.id,
+       sp.name     as sp_name,
+       sp.type     as sp_type,
+       sp.altitude as sp_altitude,
+       ep.name     as ep_name,
+       ep.type     as ep_type,
+       ep.altitude as ep_altitude,
+       t.color,
+       t.got_points
+FROM mountains.trail t
+         JOIN mountains.point sp ON sp.id = t.start_point_id
+         JOIN mountains.point ep ON ep.id = t.end_point_id
+WHERE t.start_point_id = (SELECT t2.end_point_id
+                          FROM mountains.route_trail rt
+                                   JOIN mountains.trail t2 ON rt.trail_id = t2.id
+                          WHERE rt.route_id = 1
+                            AND rt.next_id IS NULL);
+
+SELECT * FROM mountains.route_trail;

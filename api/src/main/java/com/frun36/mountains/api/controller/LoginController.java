@@ -18,9 +18,8 @@ public class LoginController {
     private LoginService loginService;
 
     @GetMapping
-    public ResponseEntity<Boolean> login(@RequestParam String username, @RequestParam String password) {
-        Boolean loginResult = loginService.login(username, password);
-
-        return loginResult == null ? ResponseEntity.internalServerError().build() : ResponseEntity.ok().body(loginResult);
+    public ResponseEntity<Integer> login(@RequestParam String username, @RequestParam String password) {
+        Integer loginResult = loginService.login(username, password);
+        return ResponseEntity.ok().body(loginResult);
     }
 }

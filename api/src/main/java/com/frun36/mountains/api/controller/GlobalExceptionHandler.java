@@ -9,8 +9,13 @@ import java.sql.SQLException;
 
 @ControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler({DataAccessException.class,SQLException.class})
-    public ResponseEntity<String> handleDbError(Exception e) {
-        return ResponseEntity.internalServerError().body(e.getMessage());
+    @ExceptionHandler(SQLException.class)
+    public ResponseEntity<String> handleDbError(SQLException e) {
+        return ResponseEntity.internalServerError().body(e.getMessage() + "\nCause: " + e.getCause());
+    }
+
+    @ExceptionHandler(DataAccessException.class)
+    public ResponseEntity<String> handleDbError(DataAccessException e) {
+        return ResponseEntity.internalServerError().body(e.getMessage() + "\nCause: " + e.getCause());
     }
 }

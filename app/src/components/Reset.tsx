@@ -1,14 +1,14 @@
 import Button from "react-bootstrap/Button";
 import ApiResponsePanel, { ApiResponse } from "./ApiResponsePanel";
 import { useState } from "react";
-import axios from "axios";
 import { Link } from "react-router-dom";
+import api from "../api";
 
 export default function Reset() {
     const [responses, setResponses] = useState<ApiResponse[]>([]);
 
     const performReset = () => {
-        axios.get("http://localhost:8080/reset")
+        api.get("/reset")
             .then((response) => setResponses((oldResponses) => [...oldResponses, { status: response.status, body: response.data }]))
             .catch((error) => setResponses((oldResponses) => [...oldResponses, { status: error.response?.status || null, body: error.response?.data || "<empty>" }]));
     }

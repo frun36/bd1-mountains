@@ -1,5 +1,6 @@
 import { Link } from 'react-router-dom';
-import { Button, Card } from 'react-bootstrap';
+import Button from 'react-bootstrap/Button';
+import Card from 'react-bootstrap/Card';
 
 export default function MainMenu() {
     return <div>

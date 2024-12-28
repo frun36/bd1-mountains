@@ -4,6 +4,7 @@ import Table from "react-bootstrap/Table";
 import ApiResponsePanel, { ApiResponse } from "./ApiResponsePanel";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
+import api from "../api";
 
 interface WithId {
     id: number;
@@ -41,7 +42,7 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
 
     // GET
     const getItems = () => {
-        axios.get<R[]>(`http://localhost:8080/raw/${tableName}`)
+        api.get<R[]>(`/raw/${tableName}`)
             .then((response) => {
                 displayResponse({ status: response.status, body: response.data });
                 if (response.data) {
@@ -54,7 +55,7 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
 
     // PUT
     const updateItem = (id: number, updatedItem: Omit<R, "id">) => {
-        axios.put(`http://localhost:8080/raw/${tableName}/${id}`, updatedItem)
+        api.put(`/raw/${tableName}/${id}`, updatedItem)
             .then((response) => {
                 displayResponse({ status: response.status, body: response.data });
                 getItems();
@@ -64,7 +65,7 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
 
     // DELETE
     const deleteItem = (id: number) => {
-        axios.delete(`http://localhost:8080/raw/${tableName}/${id}`)
+        api.delete(`/raw/${tableName}/${id}`)
             .then((response) => {
                 displayResponse({ status: response.status, body: response.data });
                 getItems();
@@ -75,7 +76,7 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
     // POST
     const addItem = () => {
         console.log(newItem);
-        axios.post<R>(`http://localhost:8080/raw/${tableName}`, newItem)
+        api.post<R>(`/raw/${tableName}`, newItem)
             .then((response) => {
                 displayResponse({ status: response.status, body: response.data });
                 getItems();

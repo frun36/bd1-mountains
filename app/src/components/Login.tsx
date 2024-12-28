@@ -2,6 +2,7 @@ import axios from "axios";
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
+import api from "../api";
 
 interface LoginData {
     username: string;
@@ -9,14 +10,14 @@ interface LoginData {
 }
 
 interface Props {
-    callback: (result: boolean) => void;
+    callback: (result: number | null) => void;
 }
 
 export default function Login({ callback }: Props) {
     const [loginData, setLoginData] = useState<LoginData>({ username: "", password: "" });
 
     const login = () => {
-        axios.get("http://localhost:8080/login", { params: loginData })
+        api.get("/login", { params: loginData })
             .then((response) => callback(response.data))
             .catch((e) => alert(e));
     }
@@ -36,7 +37,7 @@ export default function Login({ callback }: Props) {
             <Form.Control type="text" value={loginData.username} onChange={(e) => setUsername(e.target.value)} />
             <Form.Label>Password: </Form.Label>
             <Form.Control type="password" value={loginData.password} onChange={(e) => setPassword(e.target.value)} />
-            <Button variant="success" onClick={login}>Login</Button>
+            <Button variant="success" type="submit" onClick={login}>Login</Button>
         </Form.Group>
     </div>
 }
