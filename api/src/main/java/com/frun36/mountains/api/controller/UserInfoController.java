@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.frun36.mountains.api.model.RouteInfo;
+import com.frun36.mountains.api.model.UserInfo;
 import com.frun36.mountains.api.service.UserInfoService;
 
 @CrossOrigin(origins = "*")
@@ -20,6 +21,11 @@ import com.frun36.mountains.api.service.UserInfoService;
 public class UserInfoController {
     @Autowired
     UserInfoService userInfoService;
+
+    @GetMapping("/{userId}")
+    public ResponseEntity<UserInfo> getInfo(@PathVariable int userId) throws DataAccessException {
+        return ResponseEntity.ok().body(userInfoService.getInfo(userId));
+    }
 
     @GetMapping("/{userId}/routes")
     public ResponseEntity<List<RouteInfo>> getRoutes(@PathVariable int userId) throws DataAccessException {

@@ -3,8 +3,9 @@ import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
 
 export default function MainMenu() {
-    return <div>
-        <Card className="text-center">
+    return <div className="w-25 mx-auto p-2">
+        <h1>Mountains DB</h1>
+        <Card className="text-center m-1">
             <Card.Body>
                 <Card.Title>Account</Card.Title>
                 <Card.Text>View and modify your routes.</Card.Text>
@@ -15,8 +16,7 @@ export default function MainMenu() {
                 </Link>
             </Card.Body>
         </Card>
-
-        <Card className="text-center">
+        <Card className="text-center m-1">
             <Card.Body>
                 <Card.Title>Raw operations</Card.Title>
                 <Card.Text>
@@ -29,9 +29,7 @@ export default function MainMenu() {
                 </Link>
             </Card.Body>
         </Card>
-
-
-        <Card className="text-center">
+        <Card className="text-center m-1">
             <Card.Body>
                 <Card.Title>Reset DB</Card.Title>
                 <Card.Text>

@@ -12,10 +12,11 @@ export interface RouteInfo {
 
 interface Props {
     info: RouteInfo;
-    editable: boolean;
+    view: boolean;
+    edit: boolean;
 }
 
-export default function RouteCard({ info, editable }: Props) {
+export default function RouteCard({ info, view, edit }: Props) {
     return <Card>
         <Card.Header>
             <Card.Title>{info.name}</Card.Title>
@@ -24,8 +25,8 @@ export default function RouteCard({ info, editable }: Props) {
         </Card.Header>
         <Card.Body>
             <Card.Text>GOT points: {info.totalGotPoints}</Card.Text>
-            <Link to={`/routes/${info.id}?edit=false`}><Button variant="primary">View</Button></Link>
-            {editable ? <Link to={`/routes/${info.id}?edit=true`}><Button variant="warning">Edit</Button></Link> : null}
+            {view ? <Link to={`/routes/${info.id}?edit=false`}><Button variant="primary">View</Button></Link> : null}
+            {edit ? <Link to={`/routes/${info.id}?edit=true`}><Button variant="warning">Edit</Button></Link> : null}
         </Card.Body>
     </Card>
 }

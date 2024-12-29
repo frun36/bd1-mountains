@@ -4,6 +4,7 @@ import api from "../api";
 import Table from "react-bootstrap/Table";
 import Dropdown from "react-bootstrap/Dropdown";
 import Button from "react-bootstrap/Button";
+import RouteCard, { RouteInfo } from "./RouteCard";
 
 type RouteEditorParams = {
     id: string;
@@ -41,6 +42,7 @@ interface PointInfoProps {
 export default function RouteViewer() {
     const { id } = useParams<RouteEditorParams>();
 
+    const [routeInfo, setRouteInfo] = useState<RouteInfo>({ id: 0, name: "", username: "", timeModified: "", totalGotPoints: 0 });
     const [trailList, setTrailList] = useState<RouteTrailInfo[]>([]);
     const [appendableList, setAppendableList] = useState<RouteTrailInfo[]>([]);
     const [prependableList, setPrependableList] = useState<RouteTrailInfo[]>([]);
@@ -49,6 +51,10 @@ export default function RouteViewer() {
     const editable = searchParams.get('edit') === 'true';
 
     const refresh = () => {
+        api.get(`/routes/${id}/info`)
+            .then((response) => setRouteInfo(response.data))
+            .catch((e) => alert(e + "\n" + e.response?.data));
+
         api.get(`/routes/${id}`)
             .then((response) => setTrailList(response.data))
             .catch((e) => alert(e + "\n" + e.response?.data));
@@ -136,6 +142,9 @@ export default function RouteViewer() {
     }
 
     return <div className="w-50 mx-auto">
+        <div className="my-2">
+            <RouteCard info={routeInfo} view={false} edit={false} />
+        </div>
         <Table>
             <thead>
                 <tr>
@@ -148,7 +157,6 @@ export default function RouteViewer() {
             </thead>
             <tbody>
                 {editable ?
-
                     <tr>
                         <td></td>
                         <td>
