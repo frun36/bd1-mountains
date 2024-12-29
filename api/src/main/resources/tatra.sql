@@ -74,16 +74,22 @@ VALUES (1, 1, 2, 6, 'yellow'),
        (49, 4, 13, 2, 'yellow');
 ALTER SEQUENCE mountains.trail_id_seq RESTART WITH 50;
 
-INSERT INTO mountains.app_user(id, username, password, total_got_points)
-VALUES (1, 'frun36', 'qwerty', 0),
-       (2, 'test', 'test', 0);
-ALTER SEQUENCE mountains.app_user_id_seq RESTART WITH 3;
+INSERT INTO mountains.app_user(id, username, password)
+VALUES (1, 'frun36', 'qwerty'),
+       (2, 'test', 'test'),
+       (3, 'sebix', 'piwo');
+ALTER SEQUENCE mountains.app_user_id_seq RESTART WITH 4;
 
-INSERT INTO mountains.route(id, name, user_id, time_modified)
-VALUES (1, 'Kościelec z Kuźnic', 1, now()),
-       (2, 'Granaty z Kuźnic', 1, now()),
-       (3, 'Orla Perć z Murowańca', 2, now());
-ALTER SEQUENCE mountains.route_id_seq RESTART WITH 4;
+INSERT INTO mountains.route(id, name, user_id)
+VALUES (1, 'Kościelec z Kuźnic', 1),
+       (2, 'Granaty z Kuźnic', 1),
+       (3, 'Orla Perć z Murowańca', 2),
+       (4, 'Murowaniec (Harnaś)', 3),
+       (5, 'Murowaniec (Tatra)', 3),
+       (6, 'Murowaniec (Żubr)', 3),
+       (7, 'Czarny Staw Gąsienicowy', 3),
+       (8, 'Świnica z Kuźnic, od Zawratu', 2);
+ALTER SEQUENCE mountains.route_id_seq RESTART WITH 8;
 
 
 SELECT mountains.route_append(1, 42);
@@ -109,3 +115,50 @@ SELECT mountains.route_append(2, 33);
 SELECT mountains.route_append(2, 41);
 SELECT mountains.route_append(2, 47);
 SELECT mountains.route_append(2, 45);
+
+SELECT mountains.route_append(4, 42);
+SELECT mountains.route_append(4, 46);
+SELECT mountains.route_append(4, 47);
+SELECT mountains.route_append(4, 44);
+
+SELECT mountains.route_append(5, 43);
+SELECT mountains.route_append(5, 46);
+SELECT mountains.route_append(5, 47);
+SELECT mountains.route_append(5, 45);
+
+SELECT mountains.route_append(6, 42);
+SELECT mountains.route_append(6, 46);
+SELECT mountains.route_append(6, 47);
+SELECT mountains.route_append(6, 45);
+
+SELECT mountains.route_append(7, 43);
+SELECT mountains.route_append(7, 46);
+SELECT mountains.route_append(7, 40);
+SELECT mountains.route_append(7, 41);
+SELECT mountains.route_append(7, 47);
+SELECT mountains.route_append(7, 44);
+
+SELECT mountains.route_append(3, 40);
+SELECT mountains.route_append(3, 31);
+SELECT mountains.route_append(3, 30);
+SELECT mountains.route_append(3, 14);
+SELECT mountains.route_append(3, 13);
+SELECT mountains.route_append(3, 12);
+SELECT mountains.route_append(3, 10);
+SELECT mountains.route_append(3, 8);
+SELECT mountains.route_append(3, 6);
+SELECT mountains.route_append(3, 4);
+SELECT mountains.route_append(3, 2);
+
+SELECT mountains.route_append(8, 42);
+SELECT mountains.route_append(8, 46);
+SELECT mountains.route_append(8, 40);
+SELECT mountains.route_append(8, 31);
+SELECT mountains.route_append(8, 30);
+SELECT mountains.route_append(8, 15);
+SELECT mountains.route_append(8, 17);
+SELECT mountains.route_append(8, 18);
+SELECT mountains.route_append(8, 20);
+SELECT mountains.route_append(8, 23);
+SELECT mountains.route_append(8, 47);
+SELECT mountains.route_append(8, 45);
