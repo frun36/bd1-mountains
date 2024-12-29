@@ -45,6 +45,4 @@ export default function MainMenu() {
             </Card.Body>
         </Card>
     </div>
-
-
 }

@@ -1,12 +1,13 @@
 import Tabs from "react-bootstrap/Tabs";
 import Tab from "react-bootstrap/Tab";
 import Crud from "./Crud";
-import { Link } from "react-router-dom";
 
 interface AppUser {
     id: number;
     username: string | null;
     password: string | null;
+    routeCount: number | null;
+    avgRouteLen: number | null;
     totalGotPoints: number | null;
 }
 
@@ -48,11 +49,13 @@ export default function Raw() {
                 <Tab eventKey="appUser" title="app_user">
                     <Crud<AppUser>
                         tableName="app_user"
-                        defaultItem={{ username: null, password: null, totalGotPoints: null }}
+                        defaultItem={{ username: null, password: null, routeCount: null, avgRouteLen: null, totalGotPoints: null }}
                         inputs={[
                             { type: "number", key: "id", editable: false },
                             { type: "text", key: "username", editable: true },
                             { type: "text", key: "password", editable: true },
+                            { type: "number", key: "routeCount", editable: true },
+                            { type: "number", key: "avgRouteLen", editable: true },
                             { type: "number", key: "totalGotPoints", editable: true },
                         ]}
                     />

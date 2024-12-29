@@ -52,10 +52,11 @@ CREATE TABLE mountains.app_user
     id               serial      NOT NULL,
     username         varchar(64) NOT NULL,
     password         varchar(64) NOT NULL,
-    total_got_points int         NOT NULL DEFAULT 0,
+    route_count      integer     NOT NULL DEFAULT 0,
+    avg_route_len    numeric     NOT NULL DEFAULT 0,
+    total_got_points integer     NOT NULL DEFAULT 0,
     CONSTRAINT user_pk PRIMARY KEY (id),
-    CONSTRAINT user_username UNIQUE (username),
-    CONSTRAINT user_got_points CHECK (total_got_points >= 0)
+    CONSTRAINT user_username UNIQUE (username)
 );
 
 -- foreign keys
@@ -350,3 +351,94 @@ BEGIN
     RETURN deleted_count;
 END;
 $$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION mountains.route_recalculate_got()
+    RETURNS TRIGGER AS
+$$
+DECLARE
+    new_got      INT;
+    old_route_id INT := NULL;
+    new_route_id INT := NULL;
+BEGIN
+    IF TG_OP = 'INSERT' OR TG_OP = 'UPDATE' THEN
+        new_route_id := NEW.route_id;
+    END IF;
+
+    IF TG_OP = 'DELETE' OR TG_OP = 'UPDATE' THEN
+        old_route_id := OLD.route_id;
+    END IF;
+
+    IF old_route_id IS NOT NULL THEN
+        SELECT sum(t.got_points)
+        FROM mountains.route_trail rt
+                 JOIN mountains.trail t ON rt.trail_id = t.id
+        WHERE rt.route_id = old_route_id
+        INTO new_got;
+
+        UPDATE mountains.route SET total_got_points = new_got WHERE id = old_route_id;
+    END IF;
+
+    IF new_route_id IS NOT NULL THEN
+        SELECT sum(t.got_points)
+        FROM mountains.route_trail rt
+                 JOIN mountains.trail t ON rt.trail_id = t.id
+        WHERE rt.route_id = new_route_id
+        INTO new_got;
+
+        UPDATE mountains.route SET total_got_points = new_got, time_modified = now() WHERE id = new_route_id;
+    END IF;
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER route_got_trigger
+    AFTER INSERT OR UPDATE OR DELETE
+    ON mountains.route_trail
+    FOR EACH ROW
+EXECUTE FUNCTION mountains.route_recalculate_got();
+
+CREATE OR REPLACE FUNCTION mountains.user_recalculate_stats(user_id INT)
+    RETURNS VOID AS
+$$
+DECLARE
+    new_count   INT;
+    new_got     INT;
+    new_avg_len NUMERIC;
+BEGIN
+    WITH user_routes AS (SELECT *
+                         FROM mountains.route r
+                         WHERE r.user_id = user_recalculate_stats.user_id)
+    SELECT count(*), sum(total_got_points), avg(total_got_points)
+    FROM user_routes
+    INTO new_count, new_got, new_avg_len;
+
+    UPDATE mountains.app_user
+    SET route_count      = new_count,
+        total_got_points = new_got,
+        avg_route_len    = new_avg_len
+    WHERE id = user_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION mountains.user_recalculate_stats_trig()
+    RETURNS TRIGGER AS
+$$
+BEGIN
+    IF TG_OP = 'INSERT' OR TG_OP = 'UPDATE' THEN
+        PERFORM mountains.user_recalculate_stats(NEW.user_id);
+    END IF;
+
+    IF TG_OP = 'DELETE' OR TG_OP = 'UPDATE' THEN
+        PERFORM mountains.user_recalculate_stats(OLD.user_id);
+    END IF;
+
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER user_stats_trigger
+    AFTER INSERT OR UPDATE OR DELETE
+    ON mountains.route
+    FOR EACH ROW
+EXECUTE FUNCTION mountains.user_recalculate_stats_trig();

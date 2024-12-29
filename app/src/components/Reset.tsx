@@ -1,7 +1,6 @@
 import Button from "react-bootstrap/Button";
 import ApiResponsePanel, { ApiResponse } from "./ApiResponsePanel";
 import { useState } from "react";
-import { Link } from "react-router-dom";
 import api from "../api";
 
 export default function Reset() {
