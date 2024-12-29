@@ -5,6 +5,7 @@ import Reset from './components/Reset';
 import Login from './components/Login';
 import User from './components/User';
 import RouteViewer from './components/RouteEditor';
+import Leaderboard from './components/Leaderboard';
 
 export default function App() {
     return <Routes>
@@ -14,6 +15,7 @@ export default function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/users/:id" element={<User />} />
         <Route path="/routes/:id" element={<RouteViewer />} />
+        <Route path="/leaderboard" element={<Leaderboard />} />
     </Routes>
 
 }

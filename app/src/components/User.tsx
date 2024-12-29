@@ -7,7 +7,7 @@ type UserParams = {
     id: string;
 };
 
-interface UserInfo {
+export interface UserInfo {
     id: number;
     username: string;
     routeCount: number;

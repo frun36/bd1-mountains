@@ -7,6 +7,17 @@ export default function MainMenu() {
         <h1>Mountains DB</h1>
         <Card className="text-center m-1">
             <Card.Body>
+                <Card.Title>Browse</Card.Title>
+                <Card.Text>See what other users are up to.</Card.Text>
+                <Link to="/leaderboard">
+                    <Button variant="primary">
+                        Leaderboard
+                    </Button>
+                </Link>
+            </Card.Body>
+        </Card>
+        <Card className="text-center m-1">
+            <Card.Body>
                 <Card.Title>Account</Card.Title>
                 <Card.Text>View and modify your routes.</Card.Text>
                 <Link to="/login">

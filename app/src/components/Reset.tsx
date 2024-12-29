@@ -12,7 +12,7 @@ export default function Reset() {
             .catch((error) => setResponses((oldResponses) => [...oldResponses, { status: error.response?.status || null, body: error.response?.data || "<empty>" }]));
     }
 
-    return <div>
+    return <div className="w-25 mx-auto">
         <h1>Reset DB</h1>
         <Button variant="danger" onClick={performReset}>Perform reset</Button>
         <ApiResponsePanel responses={responses} />

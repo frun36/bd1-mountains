@@ -27,4 +27,14 @@ public class UserInfoService {
                 "WHERE u.id = ?";
         return jdbcTemplate.query(sql, (rs, rowId) -> new RouteInfo(rs), userId);
     }
+
+    public List<UserInfo> getLeaderboard(String orderBy) throws DataAccessException, IllegalArgumentException {
+        List<String> allowedOrderColumns = List.of("route_count", "avg_route_len", "total_got_points");
+
+        if (!allowedOrderColumns.contains(orderBy))
+            throw new IllegalArgumentException("Invalid order by column: " + orderBy);
+
+        String sql = "SELECT id, username, route_count, avg_route_len, total_got_points FROM mountains.app_user ORDER BY " + orderBy + " DESC";
+        return jdbcTemplate.query(sql, (rs, rowId) -> new UserInfo(rs));
+    }
 }
