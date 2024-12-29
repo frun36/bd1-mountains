@@ -10,7 +10,7 @@ export default function MainMenu() {
                 <Card.Text>View and modify your routes.</Card.Text>
                 <Link to="/login">
                     <Button variant="success">
-                        Login
+                        Login/register
                     </Button>
                 </Link>
             </Card.Body>

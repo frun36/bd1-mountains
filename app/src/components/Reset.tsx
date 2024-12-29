@@ -15,7 +15,6 @@ export default function Reset() {
 
     return <div>
         <h1>Reset DB</h1>
-        <p><Link to="/">back</Link></p>
         <Button variant="danger" onClick={performReset}>Perform reset</Button>
         <ApiResponsePanel responses={responses} />
     </div>

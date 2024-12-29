@@ -30,6 +30,7 @@ interface Route {
     name: string | null;
     userId: number | null;
     timeModified: string | null;
+    totalGotPoints: number | null;
 }
 
 interface RouteTrail {
@@ -43,7 +44,6 @@ interface RouteTrail {
 export default function Raw() {
     return <div>
             <h1>Raw operations</h1>
-            <p><Link to="/">back</Link></p>
             <Tabs defaultActiveKey="appUser">
                 <Tab eventKey="appUser" title="app_user">
                     <Crud<AppUser>
@@ -85,12 +85,13 @@ export default function Raw() {
                 <Tab eventKey="route" title="route">
                     <Crud<Route>
                         tableName="route"
-                        defaultItem={{ name: null, userId: null, timeModified: null }}
+                        defaultItem={{ name: null, userId: null, timeModified: null, totalGotPoints: null }}
                         inputs={[
                             { type: "number", key: "id", editable: false },
                             { type: "text", key: "name", editable: true },
                             { type: "number", key: "userId", editable: true },
                             { type: "text", key: "timeModified", editable: true },
+                            { type: "number", key: "totalGotPoints", editable: true },
                         ]}
                     />
                 </Tab>

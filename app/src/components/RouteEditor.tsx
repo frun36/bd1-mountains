@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import api from "../api";
 import Table from "react-bootstrap/Table";
 import Dropdown from "react-bootstrap/Dropdown";
@@ -38,12 +38,15 @@ interface PointInfoProps {
     altitude: number;
 }
 
-export default function RouteEditor() {
+export default function RouteViewer() {
     const { id } = useParams<RouteEditorParams>();
 
     const [trailList, setTrailList] = useState<RouteTrailInfo[]>([]);
     const [appendableList, setAppendableList] = useState<RouteTrailInfo[]>([]);
     const [prependableList, setPrependableList] = useState<RouteTrailInfo[]>([]);
+
+    const [searchParams] = useSearchParams();
+    const editable = searchParams.get('edit') === 'true';
 
     const refresh = () => {
         api.get(`/routes/${id}`)
@@ -144,63 +147,68 @@ export default function RouteEditor() {
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td></td>
-                    <td>
-                        <Dropdown>
-                            <Dropdown.Toggle variant="success">
-                                Prepend
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                {prependableList.map((trail, id) => (
-                                    <Dropdown.Item key={id} onClick={() => prepend(trail.id)}>
-                                        <table>
-                                            <tbody>
-                                                <TrailInfo trail={trail} compact={true} />
-                                            </tbody>
-                                        </table>
-                                    </Dropdown.Item>
-                                ))}
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    </td>
-                    <td>
-                        <Button
-                            variant="danger"
-                            onClick={popFront}>Pop front</Button>
-                    </td>
-                    <td></td>
-                    <td></td>
-                </tr>
+                {editable ?
+
+                    <tr>
+                        <td></td>
+                        <td>
+                            <Dropdown>
+                                <Dropdown.Toggle variant="success">
+                                    Prepend
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    {prependableList.map((trail, id) => (
+                                        <Dropdown.Item key={id} onClick={() => prepend(trail.id)}>
+                                            <table>
+                                                <tbody>
+                                                    <TrailInfo trail={trail} compact={true} />
+                                                </tbody>
+                                            </table>
+                                        </Dropdown.Item>
+                                    ))}
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </td>
+                        <td>
+                            <Button
+                                variant="danger"
+                                onClick={popFront}>Pop front</Button>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    : null}
                 {trailList.map((trail, id) => <TrailInfo key={id} trail={trail} compact={false} />)}
-                <tr>
-                    <td></td>
-                    <td>
-                        <Dropdown>
-                            <Dropdown.Toggle variant="success">
-                                Append
-                            </Dropdown.Toggle>
-                            <Dropdown.Menu>
-                                {appendableList.map((trail, id) => (
-                                    <Dropdown.Item key={id} onClick={() => append(trail.id)}>
-                                        <table>
-                                            <tbody>
-                                                <TrailInfo trail={trail} compact={true} />
-                                            </tbody>
-                                        </table>
-                                    </Dropdown.Item>
-                                ))}
-                            </Dropdown.Menu>
-                        </Dropdown>
-                    </td>
-                    <td>
-                        <Button
-                            variant="danger"
-                            onClick={popBack}>Pop back</Button>
-                    </td>
-                    <td></td>
-                    <td></td>
-                </tr>
+                {editable ?
+                    <tr>
+                        <td></td>
+                        <td>
+                            <Dropdown>
+                                <Dropdown.Toggle variant="success">
+                                    Append
+                                </Dropdown.Toggle>
+                                <Dropdown.Menu>
+                                    {appendableList.map((trail, id) => (
+                                        <Dropdown.Item key={id} onClick={() => append(trail.id)}>
+                                            <table>
+                                                <tbody>
+                                                    <TrailInfo trail={trail} compact={true} />
+                                                </tbody>
+                                            </table>
+                                        </Dropdown.Item>
+                                    ))}
+                                </Dropdown.Menu>
+                            </Dropdown>
+                        </td>
+                        <td>
+                            <Button
+                                variant="danger"
+                                onClick={popBack}>Pop back</Button>
+                        </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    : null}
             </tbody>
         </Table>
     </div>

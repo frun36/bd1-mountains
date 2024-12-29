@@ -15,10 +15,11 @@ CREATE TABLE mountains.point
 
 CREATE TABLE mountains.route
 (
-    id            serial      NOT NULL,
-    name          varchar(64) NOT NULL,
-    user_id       int         NOT NULL,
-    time_modified timestamp   NOT NULL DEFAULT now(),
+    id               serial      NOT NULL,
+    name             varchar(64) NOT NULL,
+    user_id          int         NOT NULL,
+    time_modified    timestamp   NOT NULL DEFAULT now(),
+    total_got_points int         NOT NULL DEFAULT 0,
     CONSTRAINT route_pk PRIMARY KEY (id)
 );
 
@@ -247,7 +248,7 @@ $$
 DECLARE
     trail_count   INT;
     deleted_count INT;
-    last_id INT;
+    last_id       INT;
     new_last_id   INT;
 BEGIN
     SELECT count(*) FROM mountains.route_trail rt WHERE rt.route_id = route_pop_back.route_id INTO trail_count;

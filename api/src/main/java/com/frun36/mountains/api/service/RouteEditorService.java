@@ -8,7 +8,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.frun36.mountains.api.model.Route;
+import com.frun36.mountains.api.model.RouteInfo;
 import com.frun36.mountains.api.model.RouteTrailInfo;
 
 @Service
@@ -28,33 +28,36 @@ public class RouteEditorService {
         return jdbcTemplate.query(sql, (rs, rowId) -> new RouteTrailInfo(rs), routeId);
     }
 
-    public List<Route> getRoutesForUser(int userId) throws DataAccessException {
-        String sql = "SELECT * FROM mountains.route WHERE user_id = ?";
-        return jdbcTemplate.query(sql, (rs, rowId) -> new Route(rs), userId);
+    public RouteInfo getInfo(int routeId) throws DataAccessException, SQLException {
+        String sql = "SELECT r.id, r.name, u.username, r.time_modified, r.total_got_points " +
+                "FROM mountains.route r JOIN mountains.app_user u ON r.user_id = u.id " +
+                "WHERE r.id = ?";
+        
+        return jdbcTemplate.queryForObject(sql, (rs, rowId) -> new RouteInfo(rs), routeId);
     }
 
     public List<RouteTrailInfo> getAppendable(int routeId) throws DataAccessException, SQLException {
         String sql = "WITH route_end_point_id AS ( " +
-        "    SELECT max(t2.end_point_id) AS id " + // max returns null for no elements
-        "    FROM mountains.route_trail rt " +
-        "             JOIN mountains.trail t2 ON rt.trail_id = t2.id " +
-        "    WHERE rt.route_id = ? " +
-        "      AND rt.next_id IS NULL " +
-        ") " +
-        "SELECT cast(NULL as INT) as ordinal, " +
-        "       t.id, " +
-        "       sp.name           as sp_name, " +
-        "       sp.type           as sp_type, " +
-        "       sp.altitude       as sp_altitude, " +
-        "       ep.name           as ep_name, " +
-        "       ep.type           as ep_type, " +
-        "       ep.altitude       as ep_altitude, " +
-        "       t.color, " +
-        "       t.got_points " +
-        "FROM mountains.trail t " +
-        "         JOIN mountains.point sp ON sp.id = t.start_point_id " +
-        "         JOIN mountains.point ep ON ep.id = t.end_point_id " +
-        "         JOIN route_end_point_id rsp ON rsp.id = t.start_point_id OR rsp.id IS NULL";
+                "    SELECT max(t2.end_point_id) AS id " + // max returns null for no elements
+                "    FROM mountains.route_trail rt " +
+                "             JOIN mountains.trail t2 ON rt.trail_id = t2.id " +
+                "    WHERE rt.route_id = ? " +
+                "      AND rt.next_id IS NULL " +
+                ") " +
+                "SELECT cast(NULL as INT) as ordinal, " +
+                "       t.id, " +
+                "       sp.name           as sp_name, " +
+                "       sp.type           as sp_type, " +
+                "       sp.altitude       as sp_altitude, " +
+                "       ep.name           as ep_name, " +
+                "       ep.type           as ep_type, " +
+                "       ep.altitude       as ep_altitude, " +
+                "       t.color, " +
+                "       t.got_points " +
+                "FROM mountains.trail t " +
+                "         JOIN mountains.point sp ON sp.id = t.start_point_id " +
+                "         JOIN mountains.point ep ON ep.id = t.end_point_id " +
+                "         JOIN route_end_point_id rsp ON rsp.id = t.start_point_id OR rsp.id IS NULL";
         return jdbcTemplate.query(sql, (rs, rowId) -> new RouteTrailInfo(rs), routeId);
     }
 

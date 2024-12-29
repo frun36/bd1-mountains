@@ -14,10 +14,16 @@ public class LoginService {
     public Integer login(String username, String password) throws DataAccessException {
         try {
             return jdbcTemplate.queryForObject(
-                "SELECT id FROM mountains.app_user WHERE username = ? AND password = ?", Integer.class,
-                username, password);
+                    "SELECT id FROM mountains.app_user WHERE username = ? AND password = ?", Integer.class,
+                    username, password);
         } catch (EmptyResultDataAccessException e) {
             return null;
         }
+    }
+
+    public Integer register(String username, String password) throws DataAccessException {
+        return jdbcTemplate.queryForObject(
+                "INSERT INTO mountains.app_user (username, password) VALUES (?, ?) RETURNING id",
+                Integer.class, username, password);
     }
 }
