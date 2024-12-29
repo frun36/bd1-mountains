@@ -3,6 +3,7 @@ import { useParams } from "react-router-dom";
 import api from "../api";
 import Table from "react-bootstrap/Table";
 import Dropdown from "react-bootstrap/Dropdown";
+import Button from "react-bootstrap/Button";
 
 type RouteEditorParams = {
     id: string;
@@ -42,15 +43,20 @@ export default function RouteEditor() {
 
     const [trailList, setTrailList] = useState<RouteTrailInfo[]>([]);
     const [appendableList, setAppendableList] = useState<RouteTrailInfo[]>([]);
+    const [prependableList, setPrependableList] = useState<RouteTrailInfo[]>([]);
 
     const refresh = () => {
         api.get(`/routes/${id}`)
             .then((response) => setTrailList(response.data))
-            .catch((e) => alert(e));
+            .catch((e) => alert(e + "\n" + e.response?.data));
 
         api.get(`/routes/${id}/appendable`)
             .then((response) => setAppendableList(response.data))
-            .catch((e) => alert(e));
+            .catch((e) => alert(e + "\n" + e.response?.data));
+
+        api.get(`/routes/${id}/prependable`)
+            .then((response) => setPrependableList(response.data))
+            .catch((e) => alert(e + "\n" + e.response?.data));
     };
 
     useEffect(refresh, []);
@@ -96,7 +102,34 @@ export default function RouteEditor() {
                 console.log(response);
                 refresh();
             })
-            .catch(e => alert(e));
+            .catch(e => alert(e + "\n" + e.response?.data));
+    }
+
+    const popBack = () => {
+        api.delete(`/routes/${id}/pop_back`)
+            .then(response => {
+                console.log(response);
+                refresh();
+            })
+            .catch(e => alert(e + "\n" + e.response?.data));
+    }
+
+    const prepend = (trailId: number) => {
+        api.post(`/routes/${id}/prepend`, trailId)
+            .then(response => {
+                console.log(response);
+                refresh();
+            })
+            .catch(e => alert(e + "\n" + e.response?.data));
+    }
+
+    const popFront = () => {
+        api.delete(`/routes/${id}/pop_front`)
+            .then(response => {
+                console.log(response);
+                refresh();
+            })
+            .catch(e => alert(e + "\n" + e.response?.data));
     }
 
     return <div className="w-50 mx-auto">
@@ -111,9 +144,37 @@ export default function RouteEditor() {
                 </tr>
             </thead>
             <tbody>
+                <tr>
+                    <td></td>
+                    <td>
+                        <Dropdown>
+                            <Dropdown.Toggle variant="success">
+                                Prepend
+                            </Dropdown.Toggle>
+                            <Dropdown.Menu>
+                                {prependableList.map((trail, id) => (
+                                    <Dropdown.Item key={id} onClick={() => prepend(trail.id)}>
+                                        <table>
+                                            <tbody>
+                                                <TrailInfo trail={trail} compact={true} />
+                                            </tbody>
+                                        </table>
+                                    </Dropdown.Item>
+                                ))}
+                            </Dropdown.Menu>
+                        </Dropdown>
+                    </td>
+                    <td>
+                        <Button
+                            variant="danger"
+                            onClick={popFront}>Pop front</Button>
+                    </td>
+                    <td></td>
+                    <td></td>
+                </tr>
                 {trailList.map((trail, id) => <TrailInfo key={id} trail={trail} compact={false} />)}
                 <tr>
-                    <td>...</td>
+                    <td></td>
                     <td>
                         <Dropdown>
                             <Dropdown.Toggle variant="success">
@@ -132,7 +193,11 @@ export default function RouteEditor() {
                             </Dropdown.Menu>
                         </Dropdown>
                     </td>
-                    <td></td>
+                    <td>
+                        <Button
+                            variant="danger"
+                            onClick={popBack}>Pop back</Button>
+                    </td>
                     <td></td>
                     <td></td>
                 </tr>

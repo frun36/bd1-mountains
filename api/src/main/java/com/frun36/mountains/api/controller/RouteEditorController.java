@@ -7,6 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.CrossOrigin;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -44,5 +45,28 @@ public class RouteEditorController {
     public ResponseEntity<Integer> append(@PathVariable int routeId, @RequestBody int trailId) throws DataAccessException {
         Integer appendResult = routeEditorService.append(routeId, trailId);
         return appendResult == null ? ResponseEntity.internalServerError().build() : ResponseEntity.ok().body(appendResult);
+    }
+
+    @DeleteMapping("/{routeId}/pop_back")
+    public ResponseEntity<Integer> popBack(@PathVariable int routeId) throws DataAccessException {
+        Integer deletedCount = routeEditorService.popBack(routeId);
+        return deletedCount == null ? ResponseEntity.internalServerError().build() : ResponseEntity.ok().body(deletedCount);
+    }
+
+    @GetMapping("/{routeId}/prependable")
+    public ResponseEntity<List<RouteTrailInfo>> getPrependable(@PathVariable int routeId) throws DataAccessException, SQLException {
+        return ResponseEntity.ok().body(routeEditorService.getPrependable(routeId));
+    }
+
+    @PostMapping("/{routeId}/prepend")
+    public ResponseEntity<Integer> prepend(@PathVariable int routeId, @RequestBody int trailId) throws DataAccessException {
+        Integer prependResult = routeEditorService.prepend(routeId, trailId);
+        return prependResult == null ? ResponseEntity.internalServerError().build() : ResponseEntity.ok().body(prependResult);
+    }
+
+    @DeleteMapping("/{routeId}/pop_front")
+    public ResponseEntity<Integer> popFront(@PathVariable int routeId) throws DataAccessException {
+        Integer deletedCount = routeEditorService.popFront(routeId);
+        return deletedCount == null ? ResponseEntity.internalServerError().build() : ResponseEntity.ok().body(deletedCount);
     }
 }

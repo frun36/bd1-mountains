@@ -22,7 +22,7 @@ export default function User() {
     useEffect(() => {
         api.get(`/routes/user/${id}`)
             .then((response) => setRouteList(response.data))
-            .catch((e) => alert(e));
+            .catch((e) => alert(e + "\n" + e.response?.data));
     })
 
     return <div>

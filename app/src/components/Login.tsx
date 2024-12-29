@@ -1,4 +1,3 @@
-import axios from "axios";
 import { useState } from "react";
 import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
@@ -19,7 +18,7 @@ export default function Login({ callback }: Props) {
     const login = () => {
         api.get("/login", { params: loginData })
             .then((response) => callback(response.data))
-            .catch((e) => alert(e));
+            .catch((e) => alert(e + "\n" + e.response?.data));
     }
 
     const setUsername = (newUsername: string) => {

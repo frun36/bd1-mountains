@@ -183,7 +183,7 @@ DECLARE
     end_count   INT;
     incoherence INT;
 BEGIN
-    SELECT * FROM mountains.route_trail rt WHERE rt.route_id = route_validate.route_id INTO all_count;
+    SELECT count(*) FROM mountains.route_trail rt WHERE rt.route_id = route_validate.route_id INTO all_count;
 
     IF all_count = 0 THEN RETURN; END IF;
 
@@ -220,7 +220,11 @@ BEGIN
         VALUES (route_append.route_id, route_append.trail_id, NULL, NULL)
         RETURNING id INTO inserted_id;
     ELSE
-        SELECT id FROM mountains.route_trail rt WHERE rt.route_id = route_append.route_id AND rt.next_id IS NULL INTO last_id;
+        SELECT id
+        FROM mountains.route_trail rt
+        WHERE rt.route_id = route_append.route_id
+          AND rt.next_id IS NULL
+        INTO last_id;
 
         INSERT INTO mountains.route_trail (route_id, trail_id, prev_id, next_id)
         VALUES (route_append.route_id, route_append.trail_id, last_id, NULL)
@@ -231,11 +235,117 @@ BEGIN
         WHERE id = last_id;
     END IF;
 
-    RAISE INFO 'Last ID: %', last_id;
-    RAISE INFO 'Inserted ID: %', inserted_id;
+    PERFORM mountains.route_validate(route_id);
+
+    RETURN inserted_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION mountains.route_pop_back(route_id INT)
+    RETURNS INTEGER AS
+$$
+DECLARE
+    trail_count   INT;
+    deleted_count INT;
+    last_id INT;
+    new_last_id   INT;
+BEGIN
+    SELECT count(*) FROM mountains.route_trail rt WHERE rt.route_id = route_pop_back.route_id INTO trail_count;
+
+    IF trail_count = 0 THEN
+        RETURN 0;
+    ELSIF trail_count = 1 THEN
+        DELETE FROM mountains.route_trail rt WHERE rt.route_id = route_pop_back.route_id;
+    ELSE
+        SELECT rt.id, rt.prev_id
+        FROM mountains.route_trail rt
+        WHERE rt.route_id = route_pop_back.route_id
+          AND rt.next_id IS NULL
+        INTO last_id, new_last_id;
+
+        UPDATE mountains.route_trail
+        SET next_id = NULL
+        WHERE id = new_last_id;
+
+        DELETE FROM mountains.route_trail WHERE id = last_id;
+    END IF;
+
+    PERFORM mountains.route_validate(route_id);
+    GET DIAGNOSTICS deleted_count = ROW_COUNT;
+
+    RETURN deleted_count;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION mountains.route_prepend(route_id INT, trail_id INT)
+    RETURNS INTEGER AS
+$$
+DECLARE
+    trail_count INT;
+    first_id    INT;
+    inserted_id INT;
+BEGIN
+    SELECT count(*) FROM mountains.route_trail rt WHERE rt.route_id = route_prepend.route_id INTO trail_count;
+
+    IF trail_count = 0 THEN
+        RAISE INFO 'First trail in route';
+        INSERT INTO mountains.route_trail (route_id, trail_id, prev_id, next_id)
+        VALUES (route_prepend.route_id, route_prepend.trail_id, NULL, NULL)
+        RETURNING id INTO inserted_id;
+    ELSE
+        SELECT id
+        FROM mountains.route_trail rt
+        WHERE rt.route_id = route_prepend.route_id
+          AND rt.prev_id IS NULL
+        INTO first_id;
+
+        INSERT INTO mountains.route_trail (route_id, trail_id, prev_id, next_id)
+        VALUES (route_prepend.route_id, route_prepend.trail_id, NULL, first_id)
+        RETURNING id INTO inserted_id;
+
+        UPDATE mountains.route_trail
+        SET prev_id = inserted_id
+        WHERE id = first_id;
+    END IF;
 
     PERFORM mountains.route_validate(route_id);
 
     RETURN inserted_id;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE OR REPLACE FUNCTION mountains.route_pop_front(route_id INT)
+    RETURNS INTEGER AS
+$$
+DECLARE
+    trail_count   INT;
+    deleted_count INT;
+    first_id      INT;
+    new_first_id  INT;
+BEGIN
+    SELECT count(*) FROM mountains.route_trail rt WHERE rt.route_id = route_pop_front.route_id INTO trail_count;
+
+    IF trail_count = 0 THEN
+        RETURN 0;
+    ELSIF trail_count = 1 THEN
+        DELETE FROM mountains.route_trail rt WHERE rt.route_id = route_pop_front.route_id;
+    ELSE
+        SELECT rt.id, rt.next_id
+        FROM mountains.route_trail rt
+        WHERE rt.route_id = route_pop_front.route_id
+          AND rt.prev_id IS NULL
+        INTO first_id, new_first_id;
+
+        UPDATE mountains.route_trail
+        SET prev_id = NULL
+        WHERE id = new_first_id;
+
+        DELETE FROM mountains.route_trail WHERE id = first_id;
+    END IF;
+
+    PERFORM mountains.route_validate(route_id);
+    GET DIAGNOSTICS deleted_count = ROW_COUNT;
+
+    RETURN deleted_count;
 END;
 $$ LANGUAGE plpgsql;
