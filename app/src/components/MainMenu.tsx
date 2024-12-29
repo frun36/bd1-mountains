@@ -1,10 +1,13 @@
 import { Link } from 'react-router-dom';
 import Button from 'react-bootstrap/Button';
 import Card from 'react-bootstrap/Card';
+import icon from '/icon.svg';
 
 export default function MainMenu() {
     return <div className="w-25 mx-auto p-2">
-        <h1>Mountains DB</h1>
+        <div className="w-75 mx-auto">
+            <img src={icon} alt="Icon" className="w-100" />
+        </div>
         <Card className="text-center m-1">
             <Card.Body>
                 <Card.Title>Browse</Card.Title>
