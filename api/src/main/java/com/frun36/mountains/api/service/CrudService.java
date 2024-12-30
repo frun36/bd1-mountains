@@ -17,7 +17,7 @@ public class CrudService {
     private JdbcTemplate jdbcTemplate;
 
     public List<DbRow> getAll(String tableName) throws DataAccessException {
-        String sql = String.format("SELECT * FROM mountains.%s", tableName);
+        String sql = String.format("SELECT * FROM mountains.%s ORDER BY id", tableName);
         return jdbcTemplate.query(sql, (rs, rowNum) -> DbRow.parseResultSet(rs, tableName));
     }
 
@@ -69,7 +69,7 @@ public class CrudService {
 
         String queryParams = names.stream().map(n -> String.format("%s = ?", n)).collect(Collectors.joining(", "));
 
-        String sql = String.format("UPDATE mountains.point SET %s WHERE id = ?", queryParams);
+        String sql = String.format("UPDATE mountains.%s SET %s WHERE id = ?", tableName, queryParams);
         int rowsUpdated = jdbcTemplate.update(sql, values.toArray());
         return rowsUpdated > 0;
     }

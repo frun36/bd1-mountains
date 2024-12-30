@@ -44,7 +44,8 @@ CREATE TABLE mountains.trail
     color          varchar(8) NOT NULL,
     CONSTRAINT trail_pk PRIMARY KEY (id),
     CONSTRAINT trail_color CHECK (color IN ('red', 'yellow', 'green', 'blue', 'black')),
-    CONSTRAINT trail_got_points CHECK (got_points >= 0)
+    CONSTRAINT trail_got_points CHECK (got_points >= 0),
+    CONSTRAINT trail_two_ends CHECK (start_point_id != end_point_id)
 );
 
 CREATE TABLE mountains.app_user
@@ -378,7 +379,7 @@ BEGIN
         WHERE rt.route_id = old_route_id
         INTO new_got;
 
-        UPDATE mountains.route SET total_got_points = new_got, time_modified = now() WHERE id = old_route_id;
+        UPDATE mountains.route SET total_got_points = coalesce(new_got, 0), time_modified = now() WHERE id = old_route_id;
     END IF;
 
     IF new_route_id IS NOT NULL THEN
@@ -388,7 +389,7 @@ BEGIN
         WHERE rt.route_id = new_route_id
         INTO new_got;
 
-        UPDATE mountains.route SET total_got_points = new_got, time_modified = now() WHERE id = new_route_id;
+        UPDATE mountains.route SET total_got_points = coalesce(new_got, 0), time_modified = now() WHERE id = new_route_id;
     END IF;
 
     RETURN NULL;
@@ -417,9 +418,9 @@ BEGIN
     INTO new_count, new_got, new_avg_len;
 
     UPDATE mountains.app_user
-    SET route_count      = new_count,
-        total_got_points = new_got,
-        avg_route_len    = new_avg_len
+    SET route_count      = coalesce(new_count, 0),
+        total_got_points = coalesce(new_got, 0),
+        avg_route_len    = coalesce(new_avg_len, 0)
     WHERE id = user_id;
 END;
 $$ LANGUAGE plpgsql;

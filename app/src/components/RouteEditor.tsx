@@ -84,19 +84,19 @@ export default function RouteViewer() {
 
     const PointInfo = ({ name, type, altitude }: PointInfoProps) => {
         return <p>
-            <span className="fw-bold">{name}</span> {/* Bold */}
-            <span className="text-secondary mx-1">{type}</span> {/* Semibold */}
-            <span className="text-muted">{altitude + " m"}</span> {/* Light */}
+            <span className="fw-bold">{name}</span>
+            <span className="text-secondary mx-1">{type}</span>
+            <span className="text-muted">{altitude + " m"}</span>
         </p>
     }
 
     const TrailInfo = ({ trail, compact }: TrailInfoProps) => {
         return <tr>
-            {!compact ? <td>{trail.ordinal}</td> : null}
+            {!compact && <td>{trail.ordinal}</td>}
             <td>
                 <PointInfo name={trail.startPointName} type={trail.startPointType} altitude={trail.startPointAltitude} />
             </td>
-            {compact ? <td><p className="mx-3">→</p></td> : null}
+            {compact && <td><p className="mx-3">→</p></td>}
             <td>
                 <PointInfo name={trail.endPointName} type={trail.endPointType} altitude={trail.endPointAltitude} />
             </td>

@@ -16,8 +16,10 @@ export default function ApiResponsePanel({ responses }: Props) {
     const [responseIdx, setResponseIdx] = useState<number>(-1);
 
     useEffect(() => {
-        setResponseIdx(responses.length - 1);
+        setResponseIdx(responses.length > 1 ? responses.length - 2 : responses.length - 1);
     }, [responses]);
+
+    const isSuccess = responseIdx != -1 && responses[responseIdx].status && responses[responseIdx].status >= 200 && responses[responseIdx].status < 300;
 
     return responseIdx != -1 ?
         <div>
@@ -27,18 +29,12 @@ export default function ApiResponsePanel({ responses }: Props) {
                 <Button variant="dark" onClick={() => setResponseIdx((currIdx) => currIdx < responses.length - 1 ? currIdx + 1 : currIdx)}>▶</Button>
             </ButtonGroup>
 
-            <Alert variant={
-                responses[responseIdx].status && responses[responseIdx].status >= 200 && responses[responseIdx].status < 300
-                    ? "success"
-                    : "danger"}>
-
+            <Alert variant={isSuccess ? "success" : "danger"}>
                 <h3
                     style={{
-                        color: responses[responseIdx].status && responses[responseIdx].status >= 200 && responses[responseIdx].status < 300
-                            ? "green"
-                            : "red",
+                        color: isSuccess ? "green" : "red",
                     }}>{responses[responseIdx].status ?? "Unexpected"}</h3>
-                <p>{JSON.stringify(responses[responseIdx].body) ?? "<empty>"}</p>
+                <p>{isSuccess ? (JSON.stringify(responses[responseIdx].body, null, 2) ?? "<empty>") : responses[responseIdx].body}</p>
             </Alert>
         </div> : null
 }
