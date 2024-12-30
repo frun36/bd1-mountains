@@ -101,4 +101,8 @@ public class RouteEditorService {
     public Integer popFront(int routeId) throws DataAccessException {
         return jdbcTemplate.queryForObject("SELECT mountains.route_pop_front(?)", Integer.class, routeId);
     }
+
+    public Integer deleteRoute(int routeId) throws DataAccessException {
+        return jdbcTemplate.update("DELETE FROM mountains.route WHERE id = ?", routeId);
+    }
 }

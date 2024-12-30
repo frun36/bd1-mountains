@@ -96,6 +96,7 @@ ALTER TABLE mountains.route_trail
     ADD CONSTRAINT route_trail_route
         FOREIGN KEY (route_id)
             REFERENCES mountains.route (id)
+            ON DELETE CASCADE
             NOT DEFERRABLE
                 INITIALLY IMMEDIATE
 ;

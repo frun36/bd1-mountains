@@ -36,6 +36,11 @@ public class RouteEditorController {
         return ResponseEntity.ok().body(routeEditorService.get(routeId));
     }
 
+    @DeleteMapping("/{routeId}")
+    public ResponseEntity<Integer> deleteRoute(@PathVariable int routeId) throws DataAccessException {
+        return ResponseEntity.ok().body(routeEditorService.deleteRoute(routeId));
+    }
+
     @GetMapping("/{routeId}/appendable")
     public ResponseEntity<List<RouteTrailInfo>> getAppendable(@PathVariable int routeId) throws DataAccessException, SQLException {
         return ResponseEntity.ok().body(routeEditorService.getAppendable(routeId));

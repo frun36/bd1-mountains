@@ -14,9 +14,10 @@ interface Props {
     info: RouteInfo;
     view: boolean;
     edit: boolean;
+    deleteRoute?: (id: number) => void;
 }
 
-export default function RouteCard({ info, view, edit }: Props) {
+export default function RouteCard({ info, view, edit, deleteRoute }: Props) {
     return <Card>
         <Card.Header>
             <Card.Title>{info.name}</Card.Title>
@@ -25,8 +26,9 @@ export default function RouteCard({ info, view, edit }: Props) {
         </Card.Header>
         <Card.Body>
             <Card.Text>GOT points: {info.totalGotPoints}</Card.Text>
-            {view ? <Link to={`/routes/${info.id}?edit=false`}><Button variant="primary">View</Button></Link> : null}
-            {edit ? <Link to={`/routes/${info.id}?edit=true`}><Button variant="warning">Edit</Button></Link> : null}
+            {view && <Link to={`/routes/${info.id}?edit=false`}><Button variant="primary">View</Button></Link>}
+            {edit && <Link to={`/routes/${info.id}?edit=true`}><Button variant="warning">Edit</Button></Link>}
+            {edit && <Button variant="danger" onClick={_ => deleteRoute && deleteRoute(info.id)}>Delete</Button>}
         </Card.Body>
     </Card>
 }

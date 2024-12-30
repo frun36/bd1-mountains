@@ -23,15 +23,31 @@ export default function User() {
     const [userInfo, setUserInfo] = useState<UserInfo>();
     const [routeList, setRouteList] = useState<RouteInfo[]>([]);
 
-    useEffect(() => {
-        api.get(`/users/${id}`)
-            .then((response) => setUserInfo(response.data))
-            .catch((e) => alert(e + "\n" + e.response?.data));
-
+    const getRoutes = () => {
         api.get(`/users/${id}/routes`)
             .then((response) => setRouteList(response.data))
             .catch((e) => alert(e + "\n" + e.response?.data));
+    }
+
+    const getUserInfo = () => {
+        api.get(`/users/${id}`)
+            .then((response) => setUserInfo(response.data))
+            .catch((e) => alert(e + "\n" + e.response?.data));
+    }
+
+    useEffect(() => {
+        getRoutes();
+        getUserInfo();
     }, [])
+
+    const deleteRoute = (id: number) => {
+        api.delete(`/routes/${id}`)
+            .then(r => {
+                console.log(r);
+                getRoutes();
+            })
+            .catch(e => alert(e + "\n" + e.response?.data))
+    }
 
     return <div className="w-25 mx-auto">
         <h1>{userInfo?.username}</h1>
@@ -39,7 +55,7 @@ export default function User() {
         <h3>Routes ({userInfo?.routeCount}):</h3>
         {
             routeList.map((route, id) => <div className="my-3">
-                <RouteCard key={id} info={route} edit={loggedIn} view={true} />
+                <RouteCard key={id} info={route} edit={loggedIn} view={true} deleteRoute={deleteRoute} />
             </div>)
         }
     </div>;
