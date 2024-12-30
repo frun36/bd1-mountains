@@ -66,8 +66,8 @@ export default function User() {
     }
 
     return <div className="w-25 mx-auto">
-        <h1>{userInfo?.username} (ranked {userInfo?.rank})</h1>
-        <h5 className="text-muted">GOT points: {userInfo?.totalGotPoints}</h5>
+        <h1>{userInfo?.username}</h1>
+        <h5 className="text-muted">GOT points: {userInfo?.totalGotPoints} (ranked {userInfo?.rank})</h5>
         <h3>Routes ({userInfo?.routeCount}):</h3>
         {
             routeList.map((route, id) => <div className="my-3" key={id}>

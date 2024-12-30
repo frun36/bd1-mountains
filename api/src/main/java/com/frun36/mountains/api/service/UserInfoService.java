@@ -18,7 +18,7 @@ public class UserInfoService {
     public UserInfo getInfo(int userId) throws DataAccessException {
         String sql = """
                 WITH leaderboard AS (SELECT id,
-                                            rank() OVER (ORDER BY total_got_points DESC) as r,
+                                            dense_rank() OVER (ORDER BY total_got_points DESC) as r,
                                             username,
                                             route_count,
                                             avg_route_len,
@@ -46,7 +46,7 @@ public class UserInfoService {
         if (!allowedOrderColumns.contains(orderBy))
             throw new IllegalArgumentException("Invalid order by column: " + orderBy);
 
-        String sql = "SELECT id, rank() OVER (ORDER BY " + orderBy
+        String sql = "SELECT id, dense_rank() OVER (ORDER BY " + orderBy
                 + " DESC) as r, username, route_count, avg_route_len, total_got_points FROM mountains.app_user ORDER BY r";
         return jdbcTemplate.query(sql, (rs, rowId) -> new UserInfo(rs));
     }

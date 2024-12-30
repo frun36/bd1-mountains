@@ -61,7 +61,7 @@ export default function Leaderboard() {
                         <td>{user.rank}</td>
                         <td><Link to={`/users/${user.id}?loggedIn=false`}>{user.username}</Link></td>
                         <td>{user.routeCount}</td>
-                        <td>{user.avgRouteLen}</td>
+                        <td>{user.avgRouteLen.toFixed(2)}</td>
                         <td>{user.totalGotPoints}</td>
                     </tr>)
                 }

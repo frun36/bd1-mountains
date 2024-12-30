@@ -3,7 +3,7 @@ TRUNCATE mountains.point, mountains.trail, mountains.app_user, mountains.route, 
 INSERT INTO mountains.point (id, name, altitude, type)
 VALUES (1, 'Schronisko Murowaniec', 1500, 'shelter'),
        (2, 'Czerwony Staw w Dolinie Pańszczycy', 1654, 'lake'),
-       (3, 'Przełęcz Krzyżne', 2144, 'pass'),
+       (3, 'Krzyżne', 2144, 'pass'),
        (4, 'Skrajny Granat', 2228, 'peak'),
        (5, 'Zadni Granat', 2240, 'peak'),
        (6, 'Żleb Kulczyńskiego', 2150, 'other'),
@@ -19,8 +19,11 @@ VALUES (1, 'Schronisko Murowaniec', 1500, 'shelter'),
        (16, 'Zielony Staw Gąsienicowy', 1672, 'lake'),
        (17, 'Dwoiśniak', 1588, 'lake'),
        (18, 'Między Kopami', 1499, 'signpost'),
-       (19, 'Kuźnice', 1010, 'village');
-ALTER SEQUENCE mountains.point_id_seq RESTART WITH 20;
+       (19, 'Kuźnice', 1010, 'village'),
+       (20, 'Myślenickie Turnie', 1360, 'peak'),
+       (21, 'Kasprowy Wierch', 1987, 'peak'),
+       (22, 'Liliowe', 1952, 'pass');
+ALTER SEQUENCE mountains.point_id_seq RESTART WITH 23;
 
 INSERT INTO mountains.trail (id, start_point_id, end_point_id, got_points, color)
 VALUES (1, 1, 2, 6, 'yellow'),
@@ -71,14 +74,27 @@ VALUES (1, 1, 2, 6, 'yellow'),
        (46, 18, 1, 1, 'blue'),
        (47, 1, 18, 1, 'blue'),
        (48, 13, 4, 8, 'yellow'),
-       (49, 4, 13, 2, 'yellow');
-ALTER SEQUENCE mountains.trail_id_seq RESTART WITH 50;
+       (49, 4, 13, 2, 'yellow'),
+       (50, 19, 20, 7, 'green'),
+       (51, 20, 19, 4, 'green'),
+       (52, 20, 21, 9, 'green'),
+       (53, 21, 20, 3, 'green'),
+       (54, 21, 22, 2, 'red'),
+       (55, 22, 21, 2, 'red'),
+       (56, 21, 17, 2, 'yellow'),
+       (57, 17, 21, 6, 'yellow'),
+       (58, 22, 17, 2, 'green'),
+       (59, 17, 22, 6, 'green'),
+       (60, 22, 11, 3, 'red'),
+       (61, 11, 22, 2, 'red');
+ALTER SEQUENCE mountains.trail_id_seq RESTART WITH 62;
 
 INSERT INTO mountains.app_user(id, username, password)
 VALUES (1, 'frun36', 'qwerty'),
        (2, 'test', 'test'),
-       (3, 'sebix', 'piwo');
-ALTER SEQUENCE mountains.app_user_id_seq RESTART WITH 4;
+       (3, 'sebix', 'piwo'),
+       (4, 'obibok', '1234');
+ALTER SEQUENCE mountains.app_user_id_seq RESTART WITH 5;
 
 INSERT INTO mountains.route(id, name, user_id)
 VALUES (1, 'Kościelec z Kuźnic', 1),
@@ -88,9 +104,12 @@ VALUES (1, 'Kościelec z Kuźnic', 1),
        (5, 'Murowaniec (Tatra)', 3),
        (6, 'Murowaniec (Żubr)', 3),
        (7, 'Czarny Staw Gąsienicowy', 3),
-       (8, 'Świnica z Kuźnic, od Zawratu', 2);
-ALTER SEQUENCE mountains.route_id_seq RESTART WITH 9;
+       (8, 'Świnica z Kuźnic, od Zawratu', 2),
+       (9, 'Świnica z Kuźnic, przez Kasprowy', 1),
+       (10, 'Pusta', 2);
+ALTER SEQUENCE mountains.route_id_seq RESTART WITH 11;
 
+ALTER SEQUENCE mountains.route_trail_id_seq RESTART;
 
 SELECT mountains.route_append(1, 42);
 SELECT mountains.route_append(1, 46);
@@ -162,3 +181,15 @@ SELECT mountains.route_append(8, 20);
 SELECT mountains.route_append(8, 23);
 SELECT mountains.route_append(8, 47);
 SELECT mountains.route_append(8, 45);
+
+SELECT mountains.route_append(9, 50);
+SELECT mountains.route_append(9, 52);
+SELECT mountains.route_append(9, 54);
+SELECT mountains.route_append(9, 60);
+SELECT mountains.route_append(9, 16);
+SELECT mountains.route_append(9, 17);
+SELECT mountains.route_append(9, 18);
+SELECT mountains.route_append(9, 24);
+SELECT mountains.route_append(9, 27);
+SELECT mountains.route_append(9, 41);
+SELECT mountains.route_append(9, 47);

@@ -157,7 +157,8 @@ DECLARE
         SELECT t.start_point_id, t.end_point_id
         FROM mountains.route_trail_ordered rt
                  JOIN mountains.trail t ON rt.trail_id = t.id
-        WHERE rt.route_id = route_find_incoherence.route_id;
+        WHERE rt.route_id = route_find_incoherence.route_id
+        ORDER BY rt.ordinal;
     points_record RECORD;
 BEGIN
     prev_end_id := NULL;
@@ -168,6 +169,7 @@ BEGIN
         EXIT WHEN NOT FOUND;
 
         IF prev_end_id IS NOT NULL AND points_record.start_point_id != prev_end_id THEN
+            RAISE INFO 'Incoherence: prev_end_id = %, curr_start_id = %', prev_end_id, points_record.start_point_id;
             RETURN prev_end_id;
         END IF;
 
@@ -202,7 +204,7 @@ BEGIN
 
     SELECT mountains.route_find_incoherence(route_id) INTO incoherence;
     IF incoherence IS NOT NULL THEN
-        RAISE EXCEPTION 'Incoherence found after %', incoherence;
+        RAISE EXCEPTION 'Incoherence found after point ID %', incoherence;
     END IF;
 END;
 $$ LANGUAGE plpgsql;
@@ -376,7 +378,7 @@ BEGIN
         WHERE rt.route_id = old_route_id
         INTO new_got;
 
-        UPDATE mountains.route SET total_got_points = new_got WHERE id = old_route_id;
+        UPDATE mountains.route SET total_got_points = new_got, time_modified = now() WHERE id = old_route_id;
     END IF;
 
     IF new_route_id IS NOT NULL THEN
