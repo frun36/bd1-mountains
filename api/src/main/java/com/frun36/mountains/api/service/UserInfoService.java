@@ -16,7 +16,19 @@ public class UserInfoService {
     private JdbcTemplate jdbcTemplate;
 
     public UserInfo getInfo(int userId) throws DataAccessException {
-        String sql = "SELECT id, username, route_count, avg_route_len, total_got_points FROM mountains.app_user WHERE id = ?";
+        String sql = """
+                WITH leaderboard AS (SELECT id,
+                                            rank() OVER (ORDER BY total_got_points DESC) as r,
+                                            username,
+                                            route_count,
+                                            avg_route_len,
+                                            total_got_points
+                                     FROM mountains.app_user)
+                SELECT *
+                FROM leaderboard
+                WHERE id = ?;
+                                """;
+        ;
 
         return jdbcTemplate.queryForObject(sql, (rs, rowId) -> new UserInfo(rs), userId);
     }
@@ -34,7 +46,8 @@ public class UserInfoService {
         if (!allowedOrderColumns.contains(orderBy))
             throw new IllegalArgumentException("Invalid order by column: " + orderBy);
 
-        String sql = "SELECT id, username, route_count, avg_route_len, total_got_points FROM mountains.app_user ORDER BY " + orderBy + " DESC";
+        String sql = "SELECT id, rank() OVER (ORDER BY " + orderBy
+                + " DESC) as r, username, route_count, avg_route_len, total_got_points FROM mountains.app_user ORDER BY r";
         return jdbcTemplate.query(sql, (rs, rowId) -> new UserInfo(rs));
     }
 }

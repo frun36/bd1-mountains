@@ -11,6 +11,7 @@ type UserParams = {
 
 export interface UserInfo {
     id: number;
+    rank: number;
     username: string;
     routeCount: number;
     avgRouteLen: number;
@@ -65,19 +66,30 @@ export default function User() {
     }
 
     return <div className="w-25 mx-auto">
-        <h1>{userInfo?.username}</h1>
+        <h1>{userInfo?.username} (ranked {userInfo?.rank})</h1>
         <h5 className="text-muted">GOT points: {userInfo?.totalGotPoints}</h5>
         <h3>Routes ({userInfo?.routeCount}):</h3>
         {
-            routeList.map((route, id) => <div className="my-3">
-                <RouteCard key={id} info={route} edit={loggedIn} view={true} deleteRoute={deleteRoute} />
+            routeList.map((route, id) => <div className="my-3" key={id}>
+                <RouteCard info={route} edit={loggedIn} view={true} deleteRoute={deleteRoute} />
             </div>)
         }
         {
             loggedIn &&
-            <Form>
-                <Form.Control type="text" onChange={e => setNewRouteName(e.target.value)} />
-                <Button variant="success" onClick={_ => createRoute(newRouteName)}>New route</Button>
+            <Form className="my-3 mx-1">
+                <h3>Create new route</h3>
+                <Form.Control
+                    type="text"
+                    placeholder="Enter name"
+                    onChange={e => setNewRouteName(e.target.value)}
+                />
+                <Button
+                    className="w-100 my-2"
+                    variant="success"
+                    onClick={() => createRoute(newRouteName)}
+                >
+                    New route
+                </Button>
             </Form>
         }
     </div>;

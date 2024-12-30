@@ -12,8 +12,8 @@ export default function Leaderboard() {
     const [leaderboard, setLeaderboard] = useState<UserInfo[]>([]);
 
     const orderingOptions = [
-        { eventKey: "total_got_points", text: "Total GOT points" },
-        { eventKey: "avg_route_len", text: "Average route length" },
+        { eventKey: "total_got_points", text: "Total GOT points (main)" },
+        { eventKey: "avg_route_len", text: "Average route GOT points" },
         { eventKey: "route_count", text: "Route count" },
     ];
 
@@ -48,17 +48,17 @@ export default function Leaderboard() {
         <Table>
             <thead>
                 <tr>
-                    <td>Position</td>
+                    <td>Rank</td>
                     <td>Username</td>
                     <td>Route count</td>
-                    <td>Average route length</td>
+                    <td>Average route GOT points</td>
                     <td>Total GOT points</td>
                 </tr>
             </thead>
             <tbody>
                 {
                     leaderboard.map((user, id) => <tr key={id}>
-                        <td>{id + 1}</td>
+                        <td>{user.rank}</td>
                         <td><Link to={`/users/${user.id}?loggedIn=false`}>{user.username}</Link></td>
                         <td>{user.routeCount}</td>
                         <td>{user.avgRouteLen}</td>

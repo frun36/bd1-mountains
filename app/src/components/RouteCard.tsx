@@ -29,7 +29,7 @@ export default function RouteCard({ info, view, edit, deleteRoute }: Props) {
         </Card.Header>
         <Card.Body>
             <Card.Text>GOT points: {info.totalGotPoints}</Card.Text>
-            <ButtonGroup className="w-100">
+            {(view || edit) && <ButtonGroup className="w-100">
                 {view && (
                     <Button variant="primary" onClick={() => navigate(`/routes/${info.id}?edit=false`)}>
                         View
@@ -41,7 +41,7 @@ export default function RouteCard({ info, view, edit, deleteRoute }: Props) {
                     </Button>
                 )}
                 {edit && <Button variant="danger" onClick={_ => deleteRoute && deleteRoute(info.id)}>Delete</Button>}
-            </ButtonGroup>
+            </ButtonGroup>}
         </Card.Body>
     </Card>
 }
