@@ -1,7 +1,9 @@
 import { useEffect, useState } from "react";
-import { useParams, useSearchParams } from "react-router-dom";
+import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import api from "../api";
 import RouteCard, { RouteInfo } from "./RouteCard";
+import Form from "react-bootstrap/Form";
+import Button from "react-bootstrap/Button";
 
 type UserParams = {
     id: string;
@@ -20,8 +22,11 @@ export default function User() {
     const [searchParams] = useSearchParams();
     const loggedIn = searchParams.get('loggedIn') === 'true';
 
+    const navigate = useNavigate();
+
     const [userInfo, setUserInfo] = useState<UserInfo>();
     const [routeList, setRouteList] = useState<RouteInfo[]>([]);
+    const [newRouteName, setNewRouteName] = useState<string>("");
 
     const getRoutes = () => {
         api.get(`/users/${id}/routes`)
@@ -49,6 +54,15 @@ export default function User() {
             .catch(e => alert(e + "\n" + e.response?.data))
     }
 
+    const createRoute = (name: string) => {
+        api.post(`/routes`, { userId: id, name: name })
+            .then(r => {
+                const routeId = r.data;
+                navigate(`/routes/${routeId}?edit=true`);
+            })
+            .catch(e => alert(e + "\n" + e.response?.data))
+    }
+
     return <div className="w-25 mx-auto">
         <h1>{userInfo?.username}</h1>
         <h5 className="text-muted">GOT points: {userInfo?.totalGotPoints}</h5>
@@ -58,5 +72,9 @@ export default function User() {
                 <RouteCard key={id} info={route} edit={loggedIn} view={true} deleteRoute={deleteRoute} />
             </div>)
         }
+        <Form>
+            <Form.Control type="text" onChange={e => setNewRouteName(e.target.value)} />
+            <Button variant="success" onClick={_ => createRoute(newRouteName)}>New route</Button>
+        </Form>
     </div>;
 }

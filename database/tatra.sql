@@ -89,7 +89,7 @@ VALUES (1, 'Kościelec z Kuźnic', 1),
        (6, 'Murowaniec (Żubr)', 3),
        (7, 'Czarny Staw Gąsienicowy', 3),
        (8, 'Świnica z Kuźnic, od Zawratu', 2);
-ALTER SEQUENCE mountains.route_id_seq RESTART WITH 8;
+ALTER SEQUENCE mountains.route_id_seq RESTART WITH 9;
 
 
 SELECT mountains.route_append(1, 42);

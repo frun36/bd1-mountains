@@ -105,4 +105,8 @@ public class RouteEditorService {
     public Integer deleteRoute(int routeId) throws DataAccessException {
         return jdbcTemplate.update("DELETE FROM mountains.route WHERE id = ?", routeId);
     }
+
+    public Integer addRoute(int userId, String name) throws DataAccessException {
+        return jdbcTemplate.queryForObject("INSERT INTO mountains.route (user_id, name) VALUES (?, ?) RETURNING id", Integer.class, userId, name);
+    }
 }

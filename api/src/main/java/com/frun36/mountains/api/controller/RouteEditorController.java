@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.frun36.mountains.api.model.Route;
 import com.frun36.mountains.api.model.RouteInfo;
 import com.frun36.mountains.api.model.RouteTrailInfo;
 import com.frun36.mountains.api.service.RouteEditorService;
@@ -34,6 +35,11 @@ public class RouteEditorController {
     @GetMapping("/{routeId}")
     public ResponseEntity<List<RouteTrailInfo>> getRoute(@PathVariable int routeId) throws DataAccessException, SQLException {
         return ResponseEntity.ok().body(routeEditorService.get(routeId));
+    }
+
+    @PostMapping
+    public ResponseEntity<Integer> createRoute(@RequestBody Route r) throws DataAccessException {
+        return ResponseEntity.ok().body(routeEditorService.addRoute(r.userId(), r.name()));
     }
 
     @DeleteMapping("/{routeId}")
