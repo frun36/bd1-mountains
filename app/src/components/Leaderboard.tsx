@@ -11,6 +11,12 @@ export default function Leaderboard() {
     const [ordering, setOrdering] = useState<Ordering>("total_got_points");
     const [leaderboard, setLeaderboard] = useState<UserInfo[]>([]);
 
+    const orderingOptions = [
+        { eventKey: "total_got_points", text: "Total GOT points" },
+        { eventKey: "avg_route_len", text: "Average route length" },
+        { eventKey: "route_count", text: "Route count" },
+    ];
+
     const getLeaderboard = (o: Ordering) => {
         api.get(`/users/leaderboard`, { params: { orderBy: o } })
             .then((response) => setLeaderboard(response.data))
@@ -28,13 +34,15 @@ export default function Leaderboard() {
                 setOrdering(eventKey as Ordering);
         }}>
             <Dropdown.Toggle>
-                Order by: {ordering}
+                Order by: {orderingOptions.find(option => option.eventKey === ordering)?.text}
             </Dropdown.Toggle>
 
             <Dropdown.Menu>
-                <Dropdown.Item eventKey={"route_count"}>Route count</Dropdown.Item>
-                <Dropdown.Item eventKey={"avg_route_len"}>Average route length</Dropdown.Item>
-                <Dropdown.Item eventKey={"total_got_points"}>Total GOT points</Dropdown.Item>
+                {orderingOptions.map(option => (
+                    <Dropdown.Item key={option.eventKey} eventKey={option.eventKey}>
+                        {option.text}
+                    </Dropdown.Item>
+                ))}
             </Dropdown.Menu>
         </Dropdown>
         <Table>

@@ -17,6 +17,11 @@ export default function MainMenu() {
                         Leaderboard
                     </Button>
                 </Link>
+                <Link to="/route_explorer">
+                    <Button variant="primary">
+                        Route explorer
+                    </Button>
+                </Link>
             </Card.Body>
         </Card>
         <Card className="text-center m-1">
