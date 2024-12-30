@@ -1,4 +1,4 @@
-package com.frun36.mountains.api.model;
+package com.frun36.mountains.api.model.raw;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;

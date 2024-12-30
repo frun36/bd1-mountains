@@ -72,9 +72,12 @@ export default function User() {
                 <RouteCard key={id} info={route} edit={loggedIn} view={true} deleteRoute={deleteRoute} />
             </div>)
         }
-        <Form>
-            <Form.Control type="text" onChange={e => setNewRouteName(e.target.value)} />
-            <Button variant="success" onClick={_ => createRoute(newRouteName)}>New route</Button>
-        </Form>
+        {
+            loggedIn &&
+            <Form>
+                <Form.Control type="text" onChange={e => setNewRouteName(e.target.value)} />
+                <Button variant="success" onClick={_ => createRoute(newRouteName)}>New route</Button>
+            </Form>
+        }
     </div>;
 }

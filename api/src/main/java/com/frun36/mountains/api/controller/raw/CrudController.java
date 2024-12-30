@@ -1,4 +1,4 @@
-package com.frun36.mountains.api.controller;
+package com.frun36.mountains.api.controller.raw;
 
 import java.util.List;
 
@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
-import com.frun36.mountains.api.model.DbRow;
+import com.frun36.mountains.api.model.raw.DbRow;
 import com.frun36.mountains.api.service.CrudService;
 
 public abstract class CrudController<T extends DbRow> {

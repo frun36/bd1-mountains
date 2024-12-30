@@ -9,7 +9,7 @@ import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
-import com.frun36.mountains.api.model.DbRow;
+import com.frun36.mountains.api.model.raw.DbRow;
 
 @Service
 public class CrudService {

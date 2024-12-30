@@ -1,4 +1,4 @@
-package com.frun36.mountains.api.controller;
+package com.frun36.mountains.api.controller.raw;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;

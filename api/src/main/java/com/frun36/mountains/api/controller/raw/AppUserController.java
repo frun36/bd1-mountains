@@ -1,17 +1,17 @@
-package com.frun36.mountains.api.controller;
+package com.frun36.mountains.api.controller.raw;
 
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.frun36.mountains.api.model.RouteTrail;
+import com.frun36.mountains.api.model.raw.AppUser;
 
 @CrossOrigin(origins = "*")
 @RestController
-@RequestMapping("/raw/route_trail")
-public class RouteTrailController extends CrudController<RouteTrail> {
+@RequestMapping("/raw/app_user")
+public class AppUserController extends CrudController<AppUser> {
     @Override
     protected String getTableName() {
-        return "route_trail";
+        return "app_user";
     }
 }

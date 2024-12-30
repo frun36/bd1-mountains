@@ -15,9 +15,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.frun36.mountains.api.model.Route;
 import com.frun36.mountains.api.model.RouteInfo;
 import com.frun36.mountains.api.model.RouteTrailInfo;
+import com.frun36.mountains.api.model.raw.Route;
 import com.frun36.mountains.api.service.RouteEditorService;
 
 @CrossOrigin(origins = "*")
