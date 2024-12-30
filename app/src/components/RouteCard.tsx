@@ -1,6 +1,7 @@
+import ButtonGroup from "react-bootstrap/ButtonGroup";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 export interface RouteInfo {
     id: number;
@@ -18,6 +19,8 @@ interface Props {
 }
 
 export default function RouteCard({ info, view, edit, deleteRoute }: Props) {
+    const navigate = useNavigate();
+
     return <Card>
         <Card.Header>
             <Card.Title>{info.name}</Card.Title>
@@ -26,9 +29,19 @@ export default function RouteCard({ info, view, edit, deleteRoute }: Props) {
         </Card.Header>
         <Card.Body>
             <Card.Text>GOT points: {info.totalGotPoints}</Card.Text>
-            {view && <Link to={`/routes/${info.id}?edit=false`}><Button variant="primary">View</Button></Link>}
-            {edit && <Link to={`/routes/${info.id}?edit=true`}><Button variant="warning">Edit</Button></Link>}
-            {edit && <Button variant="danger" onClick={_ => deleteRoute && deleteRoute(info.id)}>Delete</Button>}
+            <ButtonGroup className="w-100">
+                {view && (
+                    <Button variant="primary" onClick={() => navigate(`/routes/${info.id}?edit=false`)}>
+                        View
+                    </Button>
+                )}
+                {edit && (
+                    <Button variant="warning" onClick={() => navigate(`/routes/${info.id}?edit=true`)}>
+                        Edit
+                    </Button>
+                )}
+                {edit && <Button variant="danger" onClick={_ => deleteRoute && deleteRoute(info.id)}>Delete</Button>}
+            </ButtonGroup>
         </Card.Body>
     </Card>
 }

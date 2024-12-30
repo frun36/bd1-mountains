@@ -50,6 +50,7 @@ export default function User() {
             .then(r => {
                 console.log(r);
                 getRoutes();
+                getUserInfo();
             })
             .catch(e => alert(e + "\n" + e.response?.data))
     }

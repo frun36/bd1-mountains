@@ -5,6 +5,7 @@ import ApiResponsePanel, { ApiResponse } from "./ApiResponsePanel";
 import Form from "react-bootstrap/Form";
 import axios from "axios";
 import api from "../api";
+import ButtonGroup from "react-bootstrap/ButtonGroup";
 
 interface WithId {
     id: number;
@@ -106,7 +107,6 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
                             ))
                         }
                         <td></td>
-                        <td></td>
                     </tr>
                 </thead>
                 <tbody>
@@ -131,13 +131,13 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
                                 })
                             }
                             <td>
-                                <Button variant="warning" onClick={() => {
-                                    const { id, ...updatedItem } = item;
-                                    updateItem(id, updatedItem);
-                                }}>Update</Button>
-                            </td>
-                            <td>
-                                <Button variant="danger" onClick={() => deleteItem(item.id)}>Delete</Button>
+                                <ButtonGroup className="w-100">
+                                    <Button variant="warning" onClick={() => {
+                                        const { id, ...updatedItem } = item;
+                                        updateItem(id, updatedItem);
+                                    }}>Update</Button>
+                                    <Button variant="danger" onClick={() => deleteItem(item.id)}>Delete</Button>
+                                </ButtonGroup>
                             </td>
                         </tr>
                     ))}
@@ -159,10 +159,8 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
                             })
                         }
                         <td>
-                            <Button variant="success" onClick={addItem}>Add</Button>
+                            <Button className="w-100" variant="success" onClick={addItem}>Add</Button>
                         </td>
-
-                        <td></td>
                     </tr>
                 </tbody>
             </Table>

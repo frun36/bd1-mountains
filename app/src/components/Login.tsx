@@ -3,6 +3,7 @@ import Button from "react-bootstrap/Button";
 import Form from "react-bootstrap/Form";
 import api from "../api";
 import { useNavigate } from "react-router-dom";
+import ButtonGroup from "react-bootstrap/ButtonGroup";
 
 interface LoginData {
     username: string;
@@ -19,7 +20,7 @@ export default function Login() {
             .then((response) => callback(response.data))
             .catch((e) => alert(e + "\n" + e.response?.data));
     }
-    
+
     const register = () => {
         api.get("/register", { params: loginData })
             .then((response) => callback(response.data))
@@ -46,12 +47,14 @@ export default function Login() {
     return <div>
         <Form.Group className="w-25 mx-auto">
             <h1>Login</h1>
-            <Form.Label>Username: </Form.Label>
+            <Form.Label className="my-2">Username: </Form.Label>
             <Form.Control type="text" value={loginData.username} onChange={(e) => setUsername(e.target.value)} />
-            <Form.Label>Password: </Form.Label>
+            <Form.Label className="my-2">Password: </Form.Label>
             <Form.Control type="password" value={loginData.password} onChange={(e) => setPassword(e.target.value)} />
-            <Button variant="primary" type="submit" onClick={login}>Login</Button>
-            <Button variant="success" type="submit" onClick={register}>Register</Button>
+            <ButtonGroup className="w-100 my-3">
+                <Button variant="primary" type="submit" onClick={login}>Login</Button>
+                <Button variant="success" type="submit" onClick={register}>Register</Button>
+            </ButtonGroup>
         </Form.Group>
     </div>
 }
