@@ -96,7 +96,7 @@ export default function Crud<R extends WithId>({ tableName, defaultItem, inputs 
     };
 
     return (
-        <div className="w-50 p-3 mx-auto">
+        <div className="w-50 p-3 mx-auto" style={{ minWidth: "1000px" }}>
             <h1>{tableName}</h1>
             <Table>
                 <thead>

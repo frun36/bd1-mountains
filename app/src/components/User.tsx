@@ -65,7 +65,7 @@ export default function User() {
             .catch(e => alert(e + "\n" + e.response?.data))
     }
 
-    return <div className="w-25 mx-auto">
+    return <div className="w-25 mx-auto" style={{ minWidth: "500px" }}>
         <h1>{userInfo?.username}</h1>
         <h5 className="text-muted">GOT points: {userInfo?.totalGotPoints} (ranked {userInfo?.rank})</h5>
         <h3>Routes ({userInfo?.routeCount}):</h3>

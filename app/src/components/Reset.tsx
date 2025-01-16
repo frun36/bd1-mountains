@@ -22,7 +22,7 @@ export default function Reset() {
 
     }
 
-    return <div className="w-25 mx-auto">
+    return <div className="w-25 mx-auto" style={{ minWidth: "300px" }}>
         <h1>Reset DB</h1>
         <Button variant="danger" onClick={performReset} className="w-100 my-2">
             {inProgress && <Spinner size="sm" />}

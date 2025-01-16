@@ -141,7 +141,7 @@ export default function RouteViewer() {
             .catch(e => alert(e + "\n" + e.response?.data));
     }
 
-    return <div className="w-50 mx-auto">
+    return <div className="w-50 mx-auto" style={{ minWidth: "1000px" }}>
         <div className="my-2">
             <RouteCard info={routeInfo} view={false} edit={false} />
         </div>

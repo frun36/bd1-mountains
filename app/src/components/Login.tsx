@@ -45,7 +45,7 @@ export default function Login() {
     }
 
     return <div>
-        <Form.Group className="w-25 mx-auto">
+        <Form.Group className="w-25 mx-auto" style={{ minWidth: "300px" }}>
             <h1>Login</h1>
             <Form.Label className="my-2">Username: </Form.Label>
             <Form.Control type="text" value={loginData.username} onChange={(e) => setUsername(e.target.value)} />

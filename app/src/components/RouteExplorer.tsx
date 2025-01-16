@@ -29,7 +29,7 @@ export default function RouteExplorer() {
             .catch(e => alert(e + "\n" + e.response?.data))
     }, [filter]);
 
-    return <div className="w-50 mx-auto">
+    return <div className="w-50 mx-auto" style={{ minWidth: "500px" }}>
         <h1>Route explorer</h1>
         <Dropdown onSelect={(eventKey: string | null) => {
             if (eventKey)

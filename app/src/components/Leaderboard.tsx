@@ -27,7 +27,7 @@ export default function Leaderboard() {
         getLeaderboard(ordering);
     }, [ordering])
 
-    return <div className="w-50 mx-auto">
+    return <div className="w-50 mx-auto" style={{ minWidth: "500px" }}>
         <h1>User leaderboard</h1>
         <Dropdown onSelect={(eventKey: string | null) => {
             if (eventKey)

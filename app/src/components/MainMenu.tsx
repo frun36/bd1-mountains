@@ -7,7 +7,7 @@ import ButtonGroup from 'react-bootstrap/ButtonGroup';
 export default function MainMenu() {
     const navigate = useNavigate();
 
-    return <div className="w-25 mx-auto p-2">
+    return <div className="w-25 mx-auto p-2" style={{ minWidth: "500px" }}>
         <div className="w-75 mx-auto">
             <img src={icon} alt="Icon" className="w-100" />
             <Card className="text-center m-1">
