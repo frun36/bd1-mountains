@@ -135,6 +135,8 @@ FROM route_trail_list
     );
 
 -- functions and triggers
+
+-- przydatne do weryfikacji punktów startowych/końcowych trasy
 CREATE OR REPLACE FUNCTION mountains.route_count_nulls(route_id INT, col_name TEXT)
     RETURNS INTEGER AS
 $$
@@ -149,6 +151,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- szukanie niespójności (niepołączonych szlaków) w trasie
 CREATE OR REPLACE FUNCTION mountains.route_find_incoherence(route_id INT)
     RETURNS INTEGER AS
 $$
@@ -180,6 +183,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- pełna walidacja trasy, przerwanie transakcji (wyjątek) jeśli nie powiedzie się
 CREATE OR REPLACE FUNCTION mountains.route_validate(route_id INT)
     RETURNS VOID AS
 $$
@@ -210,6 +214,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- wstawianie szlaku na koniec trasy
 CREATE OR REPLACE FUNCTION mountains.route_append(route_id INT, trail_id INT)
     RETURNS INTEGER AS
 $$
@@ -247,6 +252,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- usunięcie ostatniego szlaku
 CREATE OR REPLACE FUNCTION mountains.route_pop_back(route_id INT)
     RETURNS INTEGER AS
 $$
@@ -283,6 +289,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- wstawienie szlaku na początek trasy
 CREATE OR REPLACE FUNCTION mountains.route_prepend(route_id INT, trail_id INT)
     RETURNS INTEGER AS
 $$
@@ -320,6 +327,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- usunięcie szlaku z początku trasy
 CREATE OR REPLACE FUNCTION mountains.route_pop_front(route_id INT)
     RETURNS INTEGER AS
 $$
@@ -356,6 +364,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- przeliczenie punktów GOT za trasę (oraz zmiana czasu modyfikacji na NOW)
 CREATE OR REPLACE FUNCTION mountains.route_recalculate_got()
     RETURNS TRIGGER AS
 $$
@@ -402,6 +411,7 @@ CREATE TRIGGER route_got_trigger
     FOR EACH ROW
 EXECUTE FUNCTION mountains.route_recalculate_got();
 
+-- przeliczenie statystyk użytkownika
 CREATE OR REPLACE FUNCTION mountains.user_recalculate_stats(user_id INT)
     RETURNS VOID AS
 $$
@@ -425,6 +435,7 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
+-- rozważane przypadki, gdy trasa została zmodyfikowana lub usunięta (możliwa w teorii też zmiana właściciela)
 CREATE OR REPLACE FUNCTION mountains.user_recalculate_stats_trig()
     RETURNS TRIGGER AS
 $$
