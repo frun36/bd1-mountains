@@ -1,29 +1,28 @@
-Planowane funkcjonalności:
-- przechowywanie nazwanych punktów, między którymi są szlaki:
-    - wysokość n.p.m.
-    - nazwa (lub brak)
-    - typ:
-        - szczyt
-        - przełęcz
-        - polana
-        - rozwidlenie
-        - schronisko
-        - ładny punkt
-        - inne
-- informacje o szlakach:
-    - punkt startowy
-    - punkt docelowy
-    - kolor
-    - punkty GOT za przejście (lub inna miara, typu dystans+przewyższenie)
-- użytkownicy
-    - username, password
-    - tworzenie tras
-- w aplikacji:
-    - dopisywanie punktów i szlaków (czy konieczne?)
-    - tworzenie tras (wybór kolejnych punktów, patrząc które są połączone szlakami)
-    - ranking użytkowników (punkty GOT za zapisane trasy, ew. coś bardziej wymyślnego) 
-- triggery/widoki w bazie:
-    - dbanie o integralność tabeli `route_point` - jeden początek i koniec (lub pętla), możliwe tylko takie punkty, które mają szlak między sobą
-    - generowanie tabeli `leaderboard` po odpowiednich zmianach za pomocą triggera (żeby nie było konieczne generowanie jej na każde życzenie użytkownika)
-    - funkcja upraszczająca wstawianie do tabeli `route_point` (podanie poprzedniego punktu i obecnego punktu, zamiast ręcznie rozrywać strukturę linked-listy)
-    - widok umożliwiający wyświetlenie trasy jako lista kolejnych punktów (potencjalnie często używane query)
+# Mountains Database
+
+## Overview
+The code of my final project for an introductory Databases (Bazy Danych 1) course at AGH - an app allowing users to plan, share and view routes in the Polish Tatra mountains (only aroud Hala Gąsienicowa).
+
+![Home page](img/home.png)
+
+## Features
+- Browsing the leaderboard and profiles of other users
+- Viewing other users' routes
+- Creating an account, and adding your own routes in a friendly Route editor
+- Raw operations on the database, incl. reset to example data
+
+## Implementation overview
+
+### `database`
+Contains the DDL files for recreating the database, along with some sample data (`tatra.sql`).
+
+### `api`
+Contains a Spring Boot REST API for communicating with the database. It contains endpoints enabling CRUD operation on each table in the database (generic) and those responsible for each functionality of the app.
+
+### `app`
+A React TypeScript application, enabling easy access to all aforementioned features. I am especially happy with how the route editor turned out:
+![Editing a route](img/route-editor.png)
+
+
+A more detailed description of the app, with a strong focus on the database part, can be found in `bd1-mountains.pdf` (in Polish).
+
