@@ -3,7 +3,9 @@
 ## Overview
 The code of my final project for an introductory Databases (Bazy Danych 1) course at AGH - an app allowing users to plan, share and view routes in the Polish Tatra mountains (only aroud Hala Gąsienicowa).
 
-![Home page](img/home.png)
+<p align="center">
+  <img src="img/home.png" alt="App home page" />
+</p>
 
 ## Features
 - Browsing the leaderboard and profiles of other users
